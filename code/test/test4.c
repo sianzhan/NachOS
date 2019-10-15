@@ -4,6 +4,6 @@ int main()
 {
 	int n;
 	for(n=0; n<13; n++){
-		PrintInt(n);
+		PrintInt2(n);
 	}
 }

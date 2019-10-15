@@ -70,6 +70,9 @@ ExceptionHandler(ExceptionType which)
 			DEBUG(dbgKaiZhe, "Testing for debug function, your value is " << val);
 			cout << "Print my testing integer:" << val << endl;
 			return;
+		case SC_Sleep:
+			cout << "Sleep Called!" << endl;
+			return;
 /*		case SC_Exec:
 			DEBUG(dbgAddr, "Exec\n");
 			val = kernel->machine->ReadRegister(4);

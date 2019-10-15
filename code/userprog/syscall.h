@@ -32,6 +32,7 @@
 #define SC_PrintInt	11
 
 #define SC_PrintInt2 40
+#define SC_Sleep 41
 
 #ifndef IN_ASM
 
@@ -132,6 +133,8 @@ void ThreadYield();
 void PrintInt(int number);	//my System Call
 
 void PrintInt2(int number);
+
+void Sleep(int duration);
 #endif /* IN_ASM */
 
 #endif /* SYSCALL_H */

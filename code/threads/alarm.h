@@ -21,6 +21,32 @@
 #include "utility.h"
 #include "callback.h"
 #include "timer.h"
+#include <list>
+#include "thread.h"
+
+// create a class name ThreadSleepCollection
+class ThreadInSleepCollection
+{
+public:
+	ThreadInSleepCollection(): _currentTime(0){};
+
+	void PutThreadSleep(Thread* _thread, int duration);
+	bool HasReadyThread();
+	bool IsEmpty();
+
+private:
+	class ThreadInSleep
+	{
+	public:
+		ThreadInSleep(Thread* _thread, int _timeToWake): thread(_thread), timeToWake(_timeToWake){};
+		Thread* thread;
+		int timeToWake;
+	};
+
+	int _currentTime;
+	std::list <ThreadInSleep> _threads;
+};
+
 
 // The following class defines a software alarm clock. 
 class Alarm : public CallBackObj {
@@ -32,6 +58,9 @@ class Alarm : public CallBackObj {
     void WaitUntil(int x);	// suspend execution until time > now + x
 
   private:
+  	// init ThreadInSleepCollection
+  	ThreadInSleepCollection _threadCollection;
+  	
     Timer *timer;		// the hardware timer device
 
     void CallBack();		// called when the hardware

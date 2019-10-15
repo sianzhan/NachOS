@@ -51,13 +51,65 @@ Alarm::CallBack()
 {
     Interrupt *interrupt = kernel->interrupt;
     MachineStatus status = interrupt->getStatus();
+    bool hasReadyThread = _threadCollection.HasReadyThread();
     
-    if (status == IdleMode) {	// is it time to quit?
+    if (status == IdleMode && !hasReadyThread && _threadCollection.IsEmpty()) 
+    {	// is it time to quit?
         if (!interrupt->AnyFutureInterrupts()) {
 	    timer->Disable();	// turn off the timer
 	}
-    } else {			// there's someone to preempt
+    } else 
+    {			// there's someone to preempt
 	interrupt->YieldOnReturn();
     }
+}
+
+void Alarm::WaitUntil(int x)
+{
+    // save previous level
+    IntStatus oldLevel = kernel->interrupt->SetLevel(IntOff);
+
+    Thread *thread = kernel->currentThread;
+    std::cout << "Alarm::WaitUntil Called! Thread go to sleep" << endl;
+    _threadCollection.PutThreadSleep(thread, x);
+    // set back to previous level
+    kernel->interrupt->SetLevel(oldLevel);
+}
+
+void ThreadInSleepCollection::PutThreadSleep(Thread* _thread, int duration)
+{
+    // check the current interrupt level
+    ASSERT(kernel->interrupt->getLevel() == IntOff);
+    _threads.push_back(ThreadInSleep(_thread, duration + _currentTime));
+    // set it to sleep, but not finishing (so passing false to the first parameter)
+    _thread->Sleep(false);
+}
+
+bool ThreadInSleepCollection::HasReadyThread()
+{
+    bool rtn = false;
+    _currentTime++;
+
+    for(std::list<ThreadInSleep>::iterator it = _threads.begin(); it != _threads.end();)
+    {
+        if(_currentTime >= it->timeToWake)
+        {
+            rtn = true;
+            std::cout << "Has Ready Thread! Thread woke up!" << endl;
+            kernel->scheduler->ReadyToRun(it->thread);
+            it = _threads.erase(it);
+        }
+        else
+        {
+            it++;
+        }
+    }
+
+    return rtn;
+}
+
+bool ThreadInSleepCollection::IsEmpty()
+{
+    return _threads.size() == 0;
 }
 

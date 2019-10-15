@@ -29,6 +29,9 @@ const char dbgFile = 'f'; 		// file system (FILESYS)
 const char dbgAddr = 'a'; 		// address spaces (USER_PROGRAM)
 const char dbgNet = 'n'; 		// network emulation (NETWORK)
 
+// my dbg flag
+const char dbgKaiZhe = 'k';
+
 class Debug {
   public:
     Debug(char *flagList);

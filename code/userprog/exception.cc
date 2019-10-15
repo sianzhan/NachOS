@@ -67,7 +67,8 @@ ExceptionHandler(ExceptionType which)
 			return;
 		case SC_PrintInt2:
 			val=kernel->machine->ReadRegister(4);
-			cout << "Print my testing integer:" <<val << endl;
+			DEBUG(dbgKaiZhe, "Testing for debug function, your value is " << val);
+			cout << "Print my testing integer:" << val << endl;
 			return;
 /*		case SC_Exec:
 			DEBUG(dbgAddr, "Exec\n");

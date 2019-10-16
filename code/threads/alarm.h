@@ -21,21 +21,41 @@
 #include "utility.h"
 #include "callback.h"
 #include "timer.h"
+#include "list.h"
+#include "thread.h"
+#include "interrupt.h"
 
-// The following class defines a software alarm clock. 
+// The following class defines a software alarm clock.
+
+// The following class defines a thread that is made to be waiting
+// and are proposed to be waken in the future.
+class SleepingThread {
+  public:
+    SleepingThread(Thread *thread, int time);
+            // Sleep the thread for x ticks
+    Thread *threadToWake;
+
+    int when;
+};
+ 
 class Alarm : public CallBackObj {
   public:
     Alarm(bool doRandomYield);	// Initialize the timer, and callback 
 				// to "toCall" every time slice.
-    ~Alarm() { delete timer; }
+    ~Alarm();
     
     void WaitUntil(int x);	// suspend execution until time > now + x
 
   private:
     Timer *timer;		// the hardware timer device
+    
+    SortedList<SleepingThread *> *sleeping;
+    
+    bool CheckShouldWake();    
 
     void CallBack();		// called when the hardware
 				// timer generates an interrupt
+
 };
 
 #endif // ALARM_H

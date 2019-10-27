@@ -53,6 +53,7 @@ Alarm::CallBack()
     MachineStatus status = interrupt->getStatus();
     bool hasReadyThread = _threadCollection.HasReadyThread();
     
+    kernel->currentThread->setPriority(kernel->currentThread->getPriority() - 1);
     if (status == IdleMode && !hasReadyThread && _threadCollection.IsEmpty()) 
     {	// is it time to quit?
         if (!interrupt->AnyFutureInterrupts()) {
@@ -60,7 +61,10 @@ Alarm::CallBack()
 	}
     } else 
     {			// there's someone to preempt
-	interrupt->YieldOnReturn();
+    	if(kernel->scheduler->getSchedulerType() == RR ||
+                kernel->scheduler->getSchedulerType() == Priority ) {
+            interrupt->YieldOnReturn();
+        }
     }
 }
 

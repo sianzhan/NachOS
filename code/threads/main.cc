@@ -76,11 +76,13 @@ main(int argc, char **argv)
 
     kernel = new KernelType(argc, argv);
     kernel->Initialize();
-    
+
     CallOnUserAbort(Cleanup);		// if user hits ctl-C
 
     kernel->SelfTest();
     kernel->Run();
+
+
     
     return 0;
 }

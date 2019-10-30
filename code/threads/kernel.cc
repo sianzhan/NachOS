@@ -25,6 +25,7 @@
 ThreadedKernel::ThreadedKernel(int argc, char **argv)
 {
     randomSlice = FALSE; 
+    //default as RR
     type = RR;
 
     for (int i = 1; i < argc; i++) {

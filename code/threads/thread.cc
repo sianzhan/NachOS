@@ -194,7 +194,7 @@ Thread::Finish ()
 //
 //	NOTE: we disable interrupts, so that looking at the thread
 //	on the front of the ready list, and switching to it, can be done
-//	atomically.  On return, we re-set the interrupt level to its
+//	automically.  On return, we re-set the interrupt level to its
 //	original state, in case we are called with interrupts disabled. 
 //
 // 	Similar to Thread::Sleep(), but a little different.
@@ -212,8 +212,8 @@ Thread::Yield ()
     
     nextThread = kernel->scheduler->FindNextToRun();
     if (nextThread != NULL) {
-	kernel->scheduler->ReadyToRun(this);
-	kernel->scheduler->Run(nextThread, FALSE);
+	   kernel->scheduler->ReadyToRun(this);
+	   kernel->scheduler->Run(nextThread, FALSE);
     }
     (void) kernel->interrupt->SetLevel(oldLevel);
 }

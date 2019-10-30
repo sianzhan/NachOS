@@ -138,14 +138,14 @@ Scheduler::Run (Thread *nextThread, bool finishing)
     ASSERT(kernel->interrupt->getLevel() == IntOff);
 
     if (finishing) {	// mark that we need to delete current thread
-         ASSERT(toBeDestroyed == NULL);
-	 toBeDestroyed = oldThread;
+        ASSERT(toBeDestroyed == NULL);
+        toBeDestroyed = oldThread;
     }
     
 #ifdef USER_PROGRAM			// ignore until running user programs 
     if (oldThread->space != NULL) {	// if this thread is a user program,
         oldThread->SaveUserState(); 	// save the user's CPU registers
-	oldThread->space->SaveState();
+	   oldThread->space->SaveState();
     }
 #endif
     
@@ -163,6 +163,7 @@ Scheduler::Run (Thread *nextThread, bool finishing)
     // of view of the thread and from the perspective of the "outside world".
 
     SWITCH(oldThread, nextThread);
+    // Print();
 
     // we're back, running oldThread
       
@@ -196,7 +197,7 @@ Scheduler::CheckToBeDestroyed()
 {
     if (toBeDestroyed != NULL) {
         delete toBeDestroyed;
-	toBeDestroyed = NULL;
+        toBeDestroyed = NULL;
     }
 }
  
@@ -208,6 +209,7 @@ Scheduler::CheckToBeDestroyed()
 void
 Scheduler::Print()
 {
-    cout << "Ready list contents:\n";
+    cout << "============\nCurrent Ready list contents:\n";
     readyList->Apply(ThreadPrint);
+    cout << "\nFinish printing list contents:\n============\n";
 }

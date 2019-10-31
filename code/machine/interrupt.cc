@@ -127,7 +127,6 @@ Interrupt::SetLevel(IntStatus now)
     
     // interrupt handlers are prohibited from enabling interrupts
     ASSERT((now == IntOff) || (inHandler == FALSE));
-
     ChangeLevel(old, now);			// change to new state
 
     // call OneTick() as re-enable the interrupt status
@@ -347,7 +346,7 @@ Interrupt::DumpState()
 {
     cout << "Time: " << kernel->stats->totalTicks;
     cout << ", interrupts " << intLevelNames[level] << "\n";
-    cout << "Pending interrupts:\n";
+    cout << "Pending interrupts:\n******\n";
     pending->Apply(PrintPending);
-    cout << "\nEnd of pending interrupts\n";
+    cout << "\n******\nEnd of pending interrupts\n";
 }

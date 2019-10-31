@@ -776,7 +776,7 @@ alarm.o: ../threads/alarm.cc /usr/include/stdc-predef.h \
  ../userprog/userkernel.h ../threads/kernel.h ../threads/scheduler.h \
  ../lib/list.h ../lib/debug.h ../lib/list.cc ../machine/interrupt.h \
  ../machine/stats.h ../filesys/synchdisk.h ../machine/disk.h \
- ../threads/synch.h
+ ../threads/synch.h /usr/include/c++/4.8/ctime
 kernel.o: ../threads/kernel.cc /usr/include/stdc-predef.h \
  ../lib/copyright.h ../lib/debug.h ../lib/copyright.h ../lib/utility.h \
  ../lib/sysdep.h /usr/include/c++/4.8/iostream \

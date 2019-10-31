@@ -54,11 +54,11 @@ Scheduler::Scheduler(SchedulerType type)
 		/* todo */
         	break;
     	case Priority:
-		readyList = new SortedList<Thread *>(PriorityCompare);
+            readyList = new SortedList<Thread *>(PriorityCompare);
         	break;
     	case FIFO:
-		/* todo */
-		break;
+            readyList = new List<Thread *>;
+		    break;
    	}
 	toBeDestroyed = NULL;
 } 
@@ -105,7 +105,7 @@ Scheduler::FindNextToRun ()
     ASSERT(kernel->interrupt->getLevel() == IntOff);
 
     if (readyList->IsEmpty()) {
-	return NULL;
+	   return NULL;
     } else {
     	return readyList->RemoveFront();
     }
@@ -156,6 +156,10 @@ Scheduler::Run (Thread *nextThread, bool finishing)
     nextThread->setStatus(RUNNING);      // nextThread is now running
     
     DEBUG(dbgThread, "Switching from: " << oldThread->getName() << " to: " << nextThread->getName());
+    if(debug->IsEnabled(dbgThread)){
+        ReadyListPrint();
+        CurrentThreadPrint();
+    }
     
     // This is a machine-dependent assembly language routine defined 
     // in switch.s.  You may have to think
@@ -163,8 +167,7 @@ Scheduler::Run (Thread *nextThread, bool finishing)
     // of view of the thread and from the perspective of the "outside world".
 
     SWITCH(oldThread, nextThread);
-    // Print();
-
+    
     // we're back, running oldThread
       
     // interrupts are off when we return from switch!
@@ -179,7 +182,7 @@ Scheduler::Run (Thread *nextThread, bool finishing)
 #ifdef USER_PROGRAM
     if (oldThread->space != NULL) {	    // if there is an address space
         oldThread->RestoreUserState();     // to restore, do it.
-	oldThread->space->RestoreState();
+	    oldThread->space->RestoreState();
     }
 #endif
 }
@@ -207,9 +210,16 @@ Scheduler::CheckToBeDestroyed()
 //	the ready list.  For debugging.
 //----------------------------------------------------------------------
 void
-Scheduler::Print()
+Scheduler::ReadyListPrint()
 {
     cout << "============\nCurrent Ready list contents:\n";
     readyList->Apply(ThreadPrint);
-    cout << "\nFinish printing list contents:\n============\n";
+    cout << "Finish printing list contents.\n============\n";
+}
+
+void
+Scheduler::CurrentThreadPrint(){
+    cout << "============\nCurrent Thread content:\n";
+    ThreadPrint(kernel->currentThread);
+    cout << "Finish printing thread content.\n============\n";
 }

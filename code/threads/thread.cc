@@ -250,7 +250,7 @@ Thread::Sleep (bool finishing)
 
     status = BLOCKED;
     while ((nextThread = kernel->scheduler->FindNextToRun()) == NULL)
-	kernel->interrupt->Idle();	// no one to run, wait for an interrupt
+	   kernel->interrupt->Idle();	// no one to run, wait for an interrupt
     
     // returns when it's time for us to run
     kernel->scheduler->Run(nextThread, finishing); 
@@ -445,5 +445,18 @@ Thread::SelfTest()
         t->Fork((VoidFunctionPtr) SimpleThread, (void *)NULL);
     }
     kernel->currentThread->Yield();
+}
+
+//----------------------------------------------------------------------
+// Thread::Print
+//  Print the all of the value from thread
+//----------------------------------------------------------------------
+void Thread::Print(){
+    char* threadstatus[] = { "JUST_CREATED", "RUNNING", "READY", "BLOCKED" };
+
+    cout <<  "ThreadName: " << name << '\t'; 
+    cout <<  "Burst Time: " << burstTime << '\t'; 
+    cout <<  "Priority: " << priority << '\t'; 
+    cout << "Status: " << threadstatus[status] << '\n';
 }
 

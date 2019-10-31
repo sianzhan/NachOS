@@ -139,6 +139,7 @@ class Interrupt {
 
     void ChangeLevel(IntStatus old, 	// SetLevel, without advancing the
 			IntStatus now); // simulated time
+
 };
 
 #endif // INTERRRUPT_H

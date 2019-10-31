@@ -108,7 +108,7 @@ class Thread {
     void setPriority(int t)	{priority = t;}
     int getPriority()		{return priority;}
     char* getName() { return (name); }
-    void Print() { cout << name << ' '; }
+    void Print();
     void SelfTest();		// test whether thread impl is working
 
   private:

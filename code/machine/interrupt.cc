@@ -287,15 +287,18 @@ Interrupt::CheckIfDue(bool advanceClock)
 {
     PendingInterrupt *next;
     Statistics *stats = kernel->stats;
+    Scheduler* scheduler = kernel->scheduler;
 
     ASSERT(level == IntOff);		// interrupts need to be disabled,
 					// to invoke an interrupt handler
     if (debug->IsEnabled(dbgInt)) {
-	DumpState();
+	   DumpState();
     }
     if (pending->IsEmpty()) {   	// no pending interrupts
-	return FALSE;	
-    }		
+	   return FALSE;	
+    }
+    // different action for different type
+
     next = pending->Front();
     if (next->when > stats->totalTicks) {
         if (!advanceClock) {		// not time yet

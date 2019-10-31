@@ -38,7 +38,8 @@ class Scheduler {
 	    				// Cause nextThread to start running
 	void CheckToBeDestroyed();	// Check if thread that had been
     					// running needs to be deleted
-	void Print();			// Print contents of ready list
+	void ReadyListPrint();			// Print contents of ready list
+	void CurrentThreadPrint();			// Print contents of current thread
     	
     	void setSchedulerType(SchedulerType t) {schedulerType = t;}
 	SchedulerType getSchedulerType() {return schedulerType;}

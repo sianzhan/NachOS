@@ -144,6 +144,7 @@ Interrupt::SetLevel(IntStatus now)
 //	Two things can cause OneTick to be called:
 //		interrupts are re-enabled
 //		a user instruction is executed
+//      called by Machine::Run() every tick pass
 //----------------------------------------------------------------------
 void
 Interrupt::OneTick()
@@ -168,6 +169,8 @@ Interrupt::OneTick()
 				// interrupts disabled)
     CheckIfDue(FALSE);		// check for pending interrupts
     ChangeLevel(IntOff, IntOn);	// re-enable interrupts
+
+    DEBUG(dbgInt, "== Tick part finished ==\n");
     if (yieldOnReturn) {	// if the timer device handler asked 
     				        // for a context switch, ok to do it now
     	yieldOnReturn = FALSE;
@@ -346,7 +349,7 @@ Interrupt::DumpState()
 {
     cout << "Time: " << kernel->stats->totalTicks;
     cout << ", interrupts " << intLevelNames[level] << "\n";
-    cout << "Pending interrupts:\n******\n";
+    cout << "Start Printing Pending interrupts:\n******\n";
     pending->Apply(PrintPending);
-    cout << "\n******\nEnd of pending interrupts\n";
+    cout << "\n******\nEnd of Printing pending interrupts\n";
 }

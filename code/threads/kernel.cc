@@ -15,6 +15,7 @@
 #include "libtest.h"
 #include "elevatortest.h"
 #include "string.h"
+#include <getopt.h>
 
 //----------------------------------------------------------------------
 // ThreadedKernel::ThreadedKernel
@@ -28,6 +29,99 @@ ThreadedKernel::ThreadedKernel(int argc, char **argv)
     //default as RR
     type = RR;
 
+// remember to refresh the scanning position to front
+    optind = 0;
+    while(1){
+      // for tutorial about getopt:
+      // http://www.informit.com/articles/article.aspx?p=175771&seqNum=3
+      int option_index = 0;
+      static struct option long_options[] = {
+          {"help", no_argument, 0 , 'h'},
+          {"usage", no_argument, 0, 'u'},
+          {"debUsr", no_argument, 0, 's'},
+          {"copyright", no_argument, 0, 'z'},
+
+          {"debug", required_argument, 0, 'd'},
+          {"exec", required_argument, 0, 'e'},
+          {"prior", required_argument, 0, 'p'},
+          {"arrivalTime", required_argument, 0, 't'},
+          {"burstTime", required_argument, 0, 'b'},
+          {"type", required_argument, 0, 'T'},
+          {"rs", required_argument, 0 , 'r'},
+          {0, 0, 0, 0},
+      };
+
+      char c = getopt_long(argc, argv, ":huszd:e:p:t:b:T:r:", long_options, &option_index);
+      // end position reached
+      if(c == -1){
+        // remember to refresh the scanning position to front
+        optind = 0;
+        break;
+      }
+
+      switch(c){
+        case 'u': // prints entire set of legal flags
+          printf("===========The following argument is defined in kernel.cc\n");
+          printf("Partial usage: nachos [-rs randomSeed]\n");
+          break;
+
+        case 'r':
+          RandomInit(atoi(optarg));// initialize pseudo-random
+          // number generator
+          randomSlice = TRUE;
+          printf("Number is : %s\n", optarg);
+          break;
+
+        case 'T': // set scheduler type
+          if(strcmp(optarg, "RR") == 0) {
+            type = RR;
+          } 
+          else if (strcmp(optarg, "FCFS") == 0) {
+            type = FIFO;
+          } 
+          else if (strcmp(optarg, "PNP") == 0) {
+            type = PNP;
+          }
+          else if (strcmp(optarg, "PP") == 0) {
+            type = PP;
+          } 
+          else if (strcmp(optarg, "SJF") == 0) {
+            type = SJF;
+          }
+          else if (strcmp(optarg, "SRTF") == 0) {
+            type = SRTF;
+          } 
+          else{
+            printf("Invalid Scheduler type: %s\n", optarg);
+          }
+          break;
+
+        // done nothing for the flags below, as it might declared in other file (ex : main.cc, userkernel.cc)
+        case 'h': // help
+        case 'e': // execute file
+        case 'p': // set thread's priority
+        case 't': // set thread's arrival time
+        case 'b': // set thread's burst time
+        case 's' : // set debugUserProg to true
+        case 'd' : // set debug flag
+        case 'z': // copyright
+          break;
+
+        case ':': // missing option argument
+          printf("===========The following argument is defined in kernel.cc\n");
+          printf("%s: option \'-%c\' requires an argument!\n", argv[0], optopt);
+          break;
+
+        case '?': // invalid option
+        default:
+          printf("===========The following argument is defined in kernel.cc\n");
+          printf("%s: option \'-%c\' is invalid: ignored!\n", argv[0], optopt);
+          printf("Type ./nachos -h for more help\n");
+          break;
+      }
+    }
+
+/*
     for (int i = 1; i < argc; i++) {
       if (strcmp(argv[i], "-rs") == 0) {
         ASSERT(i + 1 < argc);
@@ -52,6 +146,8 @@ ThreadedKernel::ThreadedKernel(int argc, char **argv)
         type = SJF;
       }
     }
+*/
+
 }
 
 //----------------------------------------------------------------------

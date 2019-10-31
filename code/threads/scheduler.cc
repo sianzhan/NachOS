@@ -33,6 +33,15 @@ int PriorityCompare(Thread *a, Thread *b) {
 }
 
 //----------------------------------------------------------------------
+// Compare function
+//----------------------------------------------------------------------
+int BurstTimeCompare(Thread *a, Thread *b) {
+    if(a->getPriority() == b->getPriority())
+        return 0;
+    return a->getPriority() > b->getPriority() ? 1 : -1;
+}
+
+//----------------------------------------------------------------------
 // Scheduler::Scheduler
 // 	Initialize the list of ready but not running threads.
 //	Initially, no ready threads.
@@ -50,15 +59,21 @@ Scheduler::Scheduler(SchedulerType type)
     	case RR:
         	readyList = new List<Thread *>;
         	break;
+        case FIFO:
+            readyList = new List<Thread *>;
+            break;
     	case SJF:
 		/* todo */
         	break;
-    	case Priority:
+    	case PP:
             readyList = new SortedList<Thread *>(PriorityCompare);
         	break;
-    	case FIFO:
-            readyList = new List<Thread *>;
-		    break;
+        case PNP:
+            readyList = new SortedList<Thread *>(PriorityCompare);
+            break;
+        case SRTF:
+            readyList = new SortedList<Thread *>(PriorityCompare);
+            break;
    	}
 	toBeDestroyed = NULL;
 } 
@@ -214,7 +229,7 @@ Scheduler::ReadyListPrint()
 {
     cout << "============\nCurrent Ready list contents:\n";
     readyList->Apply(ThreadPrint);
-    cout << "Finish printing list contents.\n============\n";
+    cout << "Finish printing list contents.\n";
 }
 
 void

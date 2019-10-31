@@ -19,6 +19,7 @@
 #undef MAIN
 
 #include "main.h"
+#include <getopt.h>
 
 // global variables
 KernelType *kernel;
@@ -59,22 +60,96 @@ main(int argc, char **argv)
     char *debugArg = "";
 
     // before anything else, initialize the debugging system
+    while(1){
+      // for tutorial about getopt:
+      // http://www.informit.com/articles/article.aspx?p=175771&seqNum=3
+      int option_index = 0;
+      static struct option long_options[] = {
+          {"help", no_argument, 0 , 'h'},
+          {"usage", no_argument, 0, 'u'},
+          {"debUsr", no_argument, 0, 's'},
+          {"copyright", no_argument, 0, 'z'},
+
+          {"debug", required_argument, 0, 'd'},
+          {"exec", required_argument, 0, 'e'},
+          {"prior", required_argument, 0, 'p'},
+          {"arrivalTime", required_argument, 0, 't'},
+          {"burstTime", required_argument, 0, 'b'},
+          {"type", required_argument, 0, 'T'},
+          {"rs", required_argument, 0 , 'r'},
+          {0, 0, 0, 0},
+      };
+
+      char c = getopt_long(argc, argv, ":huszd:e:p:t:b:T:r:", long_options, &option_index);
+      // end position reached
+      if(c == -1){
+        // remember to refresh the scanning position to front
+        optind = 0;
+        break;
+      }
+
+      switch(c){
+        case 'u': // prints entire set of legal flags
+          printf("===========The following argument is defined in main.cc\n");
+          printf("Partial usage: nachos [-z -d debugFlags]\n");
+          break;
+
+        case 'z': // print copyright
+            printf(copyright);
+            break;
+
+        case 'd': // set debug flag
+            debugArg = optarg;
+            break;
+
+        // done nothing for the flags below, as it might declared in other file (ex : kernel.cc, userkernel.cc)
+        case 'r': // set random number
+        case 'T': // set scheduler type
+        case 'h': // help
+        case 'e': // execute file
+        case 'p': // set thread's priority
+        case 't': // set thread's arrival time
+        case 'b': // set thread's burst time
+        case 's' : // set debugUserProg to true
+          break;
+
+        case ':': // missing option argument
+          printf("===========The following argument is defined in main.cc\n");
+          printf("%s: option \'-%c\' requires an argument!\n", argv[0], optopt);
+          break;
+
+        case '?': // invalid option
+        default:
+          printf("===========The following argument is defined in main.cc\n");
+          printf("%s: option \'-%c\' is invalid: ignored!\n", argv[0], optopt);
+          printf("Type ./nachos -h for more help\n");
+          break;
+      }
+    }
+
+    // before anything else, initialize the debugging system
+    /*
     for (i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-d") == 0) {
 	    ASSERT(i + 1 < argc);   // next argument is debug string
             debugArg = argv[i + 1];
 	    i++;
-	} else if (strcmp(argv[i], "-u") == 0) {
-            cout << "Partial usage: nachos [-z -d debugFlags]\n";
-	} else if (strcmp(argv[i], "-z") == 0) {
-            cout << copyright;
-	}
+    	} 
+        else if (strcmp(argv[i], "-u") == 0) {
+                cout << "Partial usage: nachos [-z -d debugFlags]\n";
+    	} 
+        else if (strcmp(argv[i], "-z") == 0) {
+                cout << copyright;
+    	}
     }
+    */
+
     debug = new Debug(debugArg);
     
     DEBUG(dbgThread, "Entering main");
 
     kernel = new KernelType(argc, argv);
+
     kernel->Initialize();
 
     CallOnUserAbort(Cleanup);		// if user hits ctl-C

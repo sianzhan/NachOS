@@ -48,6 +48,7 @@ class List {
 
     virtual void Prepend(T item);// Put item at the beginning of the list
     virtual void Append(T item); // Put item at the end of the list
+    void Insert(T item) { Append(item); };
 
     T Front() { return first->item; }
     				// Return first item on list

@@ -36,9 +36,9 @@ int PriorityCompare(Thread *a, Thread *b) {
 // Compare function
 //----------------------------------------------------------------------
 int BurstTimeCompare(Thread *a, Thread *b) {
-    if(a->getPriority() == b->getPriority())
+    if(a->getBurstTime() == b->getBurstTime())
         return 0;
-    return a->getPriority() > b->getPriority() ? 1 : -1;
+    return a->getBurstTime() > b->getBurstTime() ? 1 : -1;
 }
 
 //----------------------------------------------------------------------
@@ -57,23 +57,24 @@ Scheduler::Scheduler(SchedulerType type)
 	schedulerType = type;
 	switch(schedulerType) {
     	case RR:
-        	readyList = new List<Thread *>;
+        	readyList = new List<Thread *>();
         	break;
         case FIFO:
-            readyList = new List<Thread *>;
+            readyList = new List<Thread *>();
             break;
     	case SJF:
-		/* todo */
-        	break;
+    		readyList = new SortedList<Thread *>(BurstTimeCompare);
+            break;
+        case SRTF:
+            readyList = new SortedList<Thread *>(BurstTimeCompare);
+            break;
     	case PP:
             readyList = new SortedList<Thread *>(PriorityCompare);
         	break;
         case PNP:
             readyList = new SortedList<Thread *>(PriorityCompare);
             break;
-        case SRTF:
-            readyList = new SortedList<Thread *>(PriorityCompare);
-            break;
+        
    	}
 	toBeDestroyed = NULL;
 } 
@@ -103,7 +104,7 @@ Scheduler::ReadyToRun (Thread *thread)
     DEBUG(dbgThread, "Putting thread on ready list: " << thread->getName());
     
     thread->setStatus(READY);
-    readyList->Append(thread);
+    readyList->Insert(thread);
 }
 
 //----------------------------------------------------------------------
@@ -118,6 +119,8 @@ Thread *
 Scheduler::FindNextToRun ()
 {
     ASSERT(kernel->interrupt->getLevel() == IntOff);
+
+    // TODO SRTF and PP (checking queue for SRTF and PP)
 
     if (readyList->IsEmpty()) {
 	   return NULL;
@@ -171,9 +174,9 @@ Scheduler::Run (Thread *nextThread, bool finishing)
     nextThread->setStatus(RUNNING);      // nextThread is now running
     
     DEBUG(dbgThread, "Switching from: " << oldThread->getName() << " to: " << nextThread->getName());
-    if(debug->IsEnabled(dbgThread)){
-        ReadyListPrint();
+    if(debug->IsEnabled(dbgKaiZhe)){
         CurrentThreadPrint();
+        ReadyListPrint();
     }
     
     // This is a machine-dependent assembly language routine defined 
@@ -229,12 +232,12 @@ Scheduler::ReadyListPrint()
 {
     cout << "============\nCurrent Ready list contents:\n";
     readyList->Apply(ThreadPrint);
-    cout << "Finish printing list contents.\n";
+    cout << "Finish printing list contents.\n============\n";
 }
 
 void
 Scheduler::CurrentThreadPrint(){
     cout << "============\nCurrent Thread content:\n";
     ThreadPrint(kernel->currentThread);
-    cout << "Finish printing thread content.\n============\n";
+    cout << "Finish printing thread content.\n";
 }

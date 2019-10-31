@@ -156,10 +156,14 @@ Interrupt::OneTick()
     if (status == SystemMode) {
         stats->totalTicks += SystemTick;
 	   stats->systemTicks += SystemTick;
+       // cout << "=====\nTotal ticks: " << stats->totalTicks << endl;
+       // cout << "Total system ticks: " << stats->systemTicks << "\n====\n";
     } 
     else {					// USER_PROGRAM
 	   stats->totalTicks += UserTick;
 	   stats->userTicks += UserTick;
+       // cout << "=====\nTotal ticks: " << stats->totalTicks << endl;
+       // cout << "Total user ticks: " << stats->userTicks << "\n====\n";
     }
     DEBUG(dbgInt, "== Tick " << stats->totalTicks << " ==");
 

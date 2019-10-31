@@ -3,6 +3,6 @@
 int main()
 {
 	PrintInt2(1);
-	Sleep(1000);
+	Sleep(10000000);
 	PrintInt2(9);
 }

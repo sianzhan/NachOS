@@ -23,9 +23,9 @@ UserProgKernel::UserProgKernel(int argc, char **argv)
 {
     // init prior, arrivalTime, burstTime
     for(int i=0; i< 10; i++){
-	    prior[i] = {0};
-	    arrivalTime[i] = {0};
-	    burstTime[i] = {0};
+	    prior[i] = 0;
+	    arrivalTime[i] = 0;
+	    burstTime[i] = 1000;
 	}
 
 	debugUserProg = FALSE;
@@ -91,7 +91,7 @@ UserProgKernel::UserProgKernel(int argc, char **argv)
         case 't': // set thread's arrival time
         	arrivalTime[execfileNum] = atoi(optarg);
         	break;
-        	
+
         case 'b': // set thread's burst time
         	burstTime[execfileNum] = atoi(optarg);
         	break;
@@ -204,15 +204,15 @@ UserProgKernel::Run()
 
 	cout << "Total threads number is " << execfileNum << endl;
 	for (int n=1;n<=execfileNum;n++)
-		{
+	{
 		t[n] = new Thread(execfile[n]);
 		t[n]->space = new AddrSpace();
-		t[n]->Fork((VoidFunctionPtr) &ForkExecute, (void *)t[n]);
 		t[n]->setPriority(prior[n]);
 		t[n]->setBurstTime(burstTime[n]);
 		t[n]->setArrivalTime(arrivalTime[n]);
+		t[n]->Fork((VoidFunctionPtr) &ForkExecute, (void *)t[n]);
 		cout << "Thread " << execfile[n] << " is executing." << endl;
-		}
+	}
 //	Thread *t1 = new Thread(execfile[1]);
 //	Thread *t1 = new Thread("../test/test1");
 //	Thread *t2 = new Thread("../test/test2");

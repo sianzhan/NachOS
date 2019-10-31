@@ -1,0 +1,15 @@
+# RR
+./nachos -e ../test/test2 -p 3 -e ../test/test1 -p 2 -e ../test/test3 -p 4 -T RR
+
+# FCFS
+./nachos -e ../test/test1 -b 3 -e ../test/test2 -e ../test/test3 -b 1 -T FCFS
+
+# SJF
+./nachos -e ../test/test2 -b 3 -e ../test/test1 -b 2 -e ../test/test3 -b 4 -T SJF
+./nachos -e ../test/test2 -b 3 -e ../test/test1 -e ../test/test3 -b 1 -T SJF
+
+# PNP
+./nachos -e ../test/test2 -p 3 -e ../test/test1 -p 2 -e ../test/test3 -p 4 -T PNP
+
+# SRTF
+./nachos -e ../test/test2 -b 3 -e ../test/test1 -b 2 -e ../test/test3 -b 4 -T SJF

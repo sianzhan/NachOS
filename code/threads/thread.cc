@@ -457,6 +457,7 @@ void Thread::Print(){
     cout <<  "ThreadName: " << name << '\t'; 
     cout <<  "Burst Time: " << burstTime << '\t'; 
     cout <<  "Priority: " << priority << '\t'; 
+    cout << "Arrival Time: " << arrivalTime << '\t';
     cout << "Status: " << threadstatus[status] << '\n';
 }
 

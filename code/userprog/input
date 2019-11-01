@@ -1,15 +1,36 @@
 # RR
-./nachos -e ../test/test2 -p 3 -e ../test/test1 -p 2 -e ../test/test3 -p 4 -T RR
+./nachos -e ../test/test2 -e ../test/test1 -e ../test/test3 -T RR
+-> 213....
+./nachos -e ../test/test2 -t 2 -e ../test/test1 -e ../test/test3 -t 1 -T RR
+-> 132...
 
 # FCFS
-./nachos -e ../test/test1 -b 3 -e ../test/test2 -e ../test/test3 -b 1 -T FCFS
+./nachos -e ../test/test1 -e ../test/test2 -e ../test/test3 -T FCFS
+-> 123
+./nachos -e ../test/test1 -t 2 -e ../test/test2 -e ../test/test3 -t 1 -T FCFS
+-> 231
 
 # SJF
 ./nachos -e ../test/test2 -b 3 -e ../test/test1 -b 2 -e ../test/test3 -b 4 -T SJF
-./nachos -e ../test/test2 -b 3 -e ../test/test1 -e ../test/test3 -b 1 -T SJF
-
-# PNP
-./nachos -e ../test/test2 -p 3 -e ../test/test1 -p 2 -e ../test/test3 -p 4 -T PNP
+-> 123
+./nachos -e ../test/test2 -b 3 -e ../test/test1 -b 2 -t 2 -e ../test/test3 -b 4 -T SJF
+-> 213
 
 # SRTF
-./nachos -e ../test/test2 -b 3 -e ../test/test1 -b 2 -e ../test/test3 -b 4 -T SJF
+./nachos -e ../test/test2 -b 3 -t 3 -e ../test/test1 -b 4 -T SRTF
+-> 121
+./nachos -e ../test/test2 -b 3 -t 4 -e ../test/test1 -b 4 -e ../test/test3 -b 1 -t 10 -T SRTF
+-> 12321
+
+# PNP
+./nachos -e ../test/test2 -p 3 -e ../test/test1 -p 2 -t 1 -T PNP
+-> 
+./nachos -e ../test/test2 -p 3 -e ../test/test1 -p 2 -t 1 -e ../test/test3 -p 1 -t 2 -T PNP
+->
+
+# PP
+./nachos -e ../test/test2 -p 3 -e ../test/test1 -p 2 -t 1 -T PP
+-> 
+./nachos -e ../test/test2 -p 3 -e ../test/test1 -p 2 -t 1 -e ../test/test3 -p 1 -t 2 -T PP
+->
+

@@ -42,6 +42,7 @@ class Scheduler {
     					// running needs to be deleted
 	void ReadyListPrint();			// Print contents of ready list
 	void CurrentThreadPrint();			// Print contents of current thread
+	void CheckArrivalTime();		// check arrival time
     	
     	void setSchedulerType(SchedulerType t) {schedulerType = t;}
 	SchedulerType getSchedulerType() {return schedulerType;}
@@ -54,6 +55,8 @@ class Scheduler {
 					// but not running
 	Thread *toBeDestroyed;		// finishing thread to be destroyed
     					// by the next thread that runs
+	
+friend class Thread;
 };
 
 #endif // SCHEDULER_H

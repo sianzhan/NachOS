@@ -2,7 +2,7 @@
 
 int main()
 {
-	PrintInt2(1);
-	Sleep(10000000);
-	PrintInt2(9);
+	PrintInt2(123);
+	Sleep(10000);
+	PrintInt2(456);
 }

@@ -27,18 +27,39 @@
 // Compare function
 //----------------------------------------------------------------------
 int PriorityCompare(Thread *a, Thread *b) {
-    if(a->getPriority() == b->getPriority())
-        return 0;
-    return a->getPriority() > b->getPriority() ? 1 : -1;
+    if(a->getStatus() != NOTARRIVED && b->getStatus() != NOTARRIVED){
+        if(a->getPriority() == b->getPriority())
+            return 0;
+        return a->getPriority() > b->getPriority() ? 1 : -1;
+    }
+
+    else{
+        return a->getArrivalTime() > b->getArrivalTime() ? 1 : -1;
+    }
 }
 
 //----------------------------------------------------------------------
 // Compare function
 //----------------------------------------------------------------------
 int BurstTimeCompare(Thread *a, Thread *b) {
-    if(a->getBurstTime() == b->getBurstTime())
+    if(a->getStatus() != NOTARRIVED && b->getStatus() != NOTARRIVED){
+        if(a->getBurstTime() == b->getBurstTime())
+            return 0;
+        return a->getBurstTime() > b->getBurstTime() ? 1 : -1;
+    }
+    else{
+        return a->getArrivalTime() > b->getArrivalTime() ? 1 : -1;
+    }
+    
+}
+
+//----------------------------------------------------------------------
+// Compare function
+//----------------------------------------------------------------------
+int DefaultCompare(Thread *a, Thread *b) {
+    if(a->getArrivalTime() == b->getArrivalTime() || (a->getStatus() != NOTARRIVED && b->getStatus() != NOTARRIVED))
         return 0;
-    return a->getBurstTime() > b->getBurstTime() ? 1 : -1;
+    return a->getArrivalTime() > b->getArrivalTime() ? 1 : -1;
 }
 
 //----------------------------------------------------------------------
@@ -57,10 +78,10 @@ Scheduler::Scheduler(SchedulerType type)
 	schedulerType = type;
 	switch(schedulerType) {
     	case RR:
-        	readyList = new List<Thread *>();
+        	readyList = new SortedList<Thread *>(DefaultCompare);
         	break;
         case FIFO:
-            readyList = new List<Thread *>();
+            readyList = new SortedList<Thread *>(DefaultCompare);
             break;
     	case SJF:
     		readyList = new SortedList<Thread *>(BurstTimeCompare);
@@ -102,8 +123,15 @@ Scheduler::ReadyToRun (Thread *thread)
 {
     ASSERT(kernel->interrupt->getLevel() == IntOff);
     DEBUG(dbgThread, "Putting thread on ready list: " << thread->getName());
-    
-    thread->setStatus(READY);
+
+    // change status to NOTARRIVED, if arrivalTime is still future
+    if(thread->getArrivalTime() > kernel->stats->totalTicks){
+        thread->setStatus(NOTARRIVED);
+    }
+    else{
+        thread->setStatus(READY);
+    }
+
     readyList->Insert(thread);
 }
 
@@ -125,7 +153,18 @@ Scheduler::FindNextToRun ()
     if (readyList->IsEmpty()) {
 	   return NULL;
     } else {
-    	return readyList->RemoveFront();
+        // only get thread that wasn't BLOCKED and NOTARRIVED
+        ListIterator<Thread* > ptr = ListIterator<Thread*>(readyList);
+
+        while(!ptr.IsDone()){
+            if(ptr.Item()->getStatus() == READY)
+            {
+                readyList->Remove(ptr.Item());
+                return ptr.Item();
+            }
+            ptr.Next();
+        }
+    	// return readyList->RemoveFront();
     }
 }
 
@@ -230,14 +269,25 @@ Scheduler::CheckToBeDestroyed()
 void
 Scheduler::ReadyListPrint()
 {
-    cout << "============\nCurrent Ready list contents:\n";
+    cout << "======Current Ready list contents:======\n";
     readyList->Apply(ThreadPrint);
-    cout << "Finish printing list contents.\n============\n";
+    // ListIterator<Thread* > ptr = ListIterator<Thread*>(readyList);
+
+    // while(!ptr.IsDone()){
+    //     ThreadPrint(ptr.Item());
+    //     ptr.Next();
+    // }
+    cout << "Finish printing list contents.\n\n";
 }
 
 void
 Scheduler::CurrentThreadPrint(){
-    cout << "============\nCurrent Thread content:\n";
+    cout << "\n======Current Thread content:======\n";
     ThreadPrint(kernel->currentThread);
-    cout << "Finish printing thread content.\n";
+    cout << "Finish printing current thread content.\n";
+}
+
+void
+Scheduler::CheckArrivalTime(){
+    readyList->Apply(ThreadCheckArrivalTime);
 }

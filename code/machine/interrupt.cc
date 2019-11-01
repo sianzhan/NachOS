@@ -152,18 +152,22 @@ Interrupt::OneTick()
     MachineStatus oldStatus = status;
     Statistics *stats = kernel->stats;
 
-// advance simulated time
+    // advance simulated time
     if (status == SystemMode) {
         stats->totalTicks += SystemTick;
 	   stats->systemTicks += SystemTick;
-       // cout << "=====\nTotal ticks: " << stats->totalTicks << endl;
-       // cout << "Total system ticks: " << stats->systemTicks << "\n====\n";
+       // if(debug->IsEnabled(dbgKaiZhe)){
+       //      cout << "=====\nTotal ticks: " << stats->totalTicks << endl;
+       //      cout << "Total system ticks: " << stats->systemTicks << "\n====\n";
+       //  }
     } 
     else {					// USER_PROGRAM
 	   stats->totalTicks += UserTick;
 	   stats->userTicks += UserTick;
-       // cout << "=====\nTotal ticks: " << stats->totalTicks << endl;
-       // cout << "Total user ticks: " << stats->userTicks << "\n====\n";
+       // if(debug->IsEnabled(dbgKaiZhe)){
+       //      cout << "=====\nTotal ticks: " << stats->totalTicks << endl;
+       //      cout << "Total user ticks: " << stats->userTicks << "\n====\n";
+       //  }
     }
     DEBUG(dbgInt, "== Tick " << stats->totalTicks << " ==");
 
@@ -175,13 +179,16 @@ Interrupt::OneTick()
     ChangeLevel(IntOff, IntOn);	// re-enable interrupts
 
     DEBUG(dbgInt, "== Tick part finished ==\n");
-    if (yieldOnReturn) {	// if the timer device handler asked 
-    				        // for a context switch, ok to do it now
+    if (yieldOnReturn) {	
+        // if the timer device handler asked for a context switch, ok to do it now 
     	yieldOnReturn = FALSE;
      	status = SystemMode;		// yield is a kernel routine
     	kernel->currentThread->Yield();
     	status = oldStatus;
     }
+
+    // check whether a thread has arrived
+    kernel->scheduler->CheckArrivalTime();
 }
 
 //----------------------------------------------------------------------
@@ -359,4 +366,14 @@ Interrupt::DumpState()
     cout << "Start Printing Pending interrupts:\n******\n";
     pending->Apply(PrintPending);
     cout << "\n******\nEnd of Printing pending interrupts\n";
+}
+
+void 
+Interrupt::YieldFromArrivedThread()
+{
+    if(kernel->scheduler->getSchedulerType() == PP ||
+        kernel->scheduler->getSchedulerType() == SRTF) 
+        {
+            yieldOnReturn = TRUE;
+        }
 }

@@ -24,6 +24,20 @@
 
 // this is put at the top of the execution stack, for detecting stack overflows
 const int STACK_FENCEPOST = 0xdedbeef;
+char* threadstatus[] = { "JUST_CREATED", "RUNNING", "READY", "BLOCKED", "NOTARRIVED"};
+
+//----------------------------------------------------------------------
+// Help function for PP and SRTF
+// compare priority
+// compare burstTime
+//----------------------------------------------------------------------
+bool HelperPriorityCompare(Thread *a, Thread *b){
+    return a->getPriority() < b->getPriority();
+}
+
+bool HelperBurstTimeCompare(Thread *a, Thread *b){
+    return a->getBurstTime() < b->getBurstTime();
+}
 
 //----------------------------------------------------------------------
 // Thread::Thread
@@ -102,8 +116,10 @@ Thread::Fork(VoidFunctionPtr func, void *arg)
     StackAllocate(func, arg);
 
     oldLevel = interrupt->SetLevel(IntOff);
+
     scheduler->ReadyToRun(this);	// ReadyToRun assumes that interrupts 
 					// are disabled!
+
     (void) interrupt->SetLevel(oldLevel);
 }    
 
@@ -205,6 +221,7 @@ Thread::Yield ()
 {
     Thread *nextThread;
     IntStatus oldLevel = kernel->interrupt->SetLevel(IntOff);
+
     
     ASSERT(this == kernel->currentThread);
     
@@ -212,8 +229,23 @@ Thread::Yield ()
     
     nextThread = kernel->scheduler->FindNextToRun();
     if (nextThread != NULL) {
-	   kernel->scheduler->ReadyToRun(this);
-	   kernel->scheduler->Run(nextThread, FALSE);
+        // TODO check the prio/burstTime/someshit here
+        SchedulerType type = kernel->scheduler->getSchedulerType();
+
+        if(type == PP && HelperPriorityCompare(this, nextThread)){
+            // lower priority than the current thread, put back the queue
+            kernel->scheduler->ReadyToRun(nextThread);  
+        }
+        else if(type == SRTF && HelperBurstTimeCompare(this, nextThread)){
+            // higher burst time than the current thread, put back the queue
+            kernel->scheduler->ReadyToRun(nextThread);
+        }
+
+        else{
+            kernel->scheduler->ReadyToRun(this);
+            kernel->scheduler->Run(nextThread, FALSE);
+        }
+	   
     }
     (void) kernel->interrupt->SetLevel(oldLevel);
 }
@@ -267,6 +299,7 @@ Thread::Sleep (bool finishing)
 static void ThreadFinish()    { kernel->currentThread->Finish(); }
 static void ThreadBegin() { kernel->currentThread->Begin(); }
 void ThreadPrint(Thread *t) { t->Print(); }
+void ThreadCheckArrivalTime(Thread *t) { t->CheckArrivalTime(); }
 
 #ifdef PARISC
 
@@ -431,19 +464,27 @@ void
 Thread::SelfTest()
 {
     DEBUG(dbgThread, "Entering Thread::SelfTest");
-    
+
     const int number 	 = 3;
     char *name[number] 	 = {"A", "B", "C"};
     int burst[number] 	 = {3, 10, 4};
     int priority[number] = {4, 5, 3};
+    int arrivalTime[number] = {3, 1, 2};
+
+    delete kernel->scheduler;
+    kernel->scheduler = new Scheduler(FIFO);
 
     Thread *t;
     for (int i = 0; i < number; i ++) {
         t = new Thread(name[i]);
         t->setPriority(priority[i]);
         t->setBurstTime(burst[i]);
+        t->setArrivalTime(arrivalTime[i] * 10 + 50);
         t->Fork((VoidFunctionPtr) SimpleThread, (void *)NULL);
     }
+    kernel->scheduler->CurrentThreadPrint();
+    kernel->scheduler->ReadyListPrint();
+
     kernel->currentThread->Yield();
 }
 
@@ -452,12 +493,27 @@ Thread::SelfTest()
 //  Print the all of the value from thread
 //----------------------------------------------------------------------
 void Thread::Print(){
-    char* threadstatus[] = { "JUST_CREATED", "RUNNING", "READY", "BLOCKED" };
-
     cout <<  "ThreadName: " << name << '\t'; 
     cout <<  "Burst Time: " << burstTime << '\t'; 
     cout <<  "Priority: " << priority << '\t'; 
     cout << "Arrival Time: " << arrivalTime << '\t';
     cout << "Status: " << threadstatus[status] << '\n';
+}
+
+//----------------------------------------------------------------------
+// Check which thread is NOTARRIVED yet, 
+// if totalTicks > arrivalTime, means it has arrived!
+//----------------------------------------------------------------------
+void Thread::CheckArrivalTime(){
+    int ticks = kernel->stats->totalTicks;
+    if(ticks > arrivalTime && status == NOTARRIVED){
+        status = READY;
+        cout << "ThreadName: " << name << " has arrived!\n";
+        // reinsert thread into readyList to regroup position
+        kernel->scheduler->readyList->Remove(this);
+        kernel->scheduler->readyList->Insert(this);
+
+        kernel->interrupt->YieldFromArrivedThread();
+    }
 }
 

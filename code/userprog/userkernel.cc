@@ -89,7 +89,7 @@ UserProgKernel::UserProgKernel(int argc, char **argv)
         	break;
 
         case 't': // set thread's arrival time
-        	arrivalTime[execfileNum] = atoi(optarg);
+        	arrivalTime[execfileNum] = atof(optarg);
         	break;
 
         case 'b': // set thread's burst time
@@ -201,7 +201,6 @@ UserProgKernel::Run()
 	cout << "\n========\n";
 	*/
 
-
 	cout << "Total threads number is " << execfileNum << endl;
 	for (int n=1;n<=execfileNum;n++)
 	{
@@ -209,10 +208,28 @@ UserProgKernel::Run()
 		t[n]->space = new AddrSpace();
 		t[n]->setPriority(prior[n]);
 		t[n]->setBurstTime(burstTime[n]);
-		t[n]->setArrivalTime(arrivalTime[n]);
+		t[n]->setArrivalTime(arrivalTime[n] == 0 ? 0 : arrivalTime[n] * 10 + 50);
 		t[n]->Fork((VoidFunctionPtr) &ForkExecute, (void *)t[n]);
-		cout << "Thread " << execfile[n] << " is executing." << endl;
+
+		if(t[n]->getArrivalTime() > 0){
+			t[n]->setStatus(NOTARRIVED);
+			// cout << "Thread " << execfile[n] << " is not arrived yet! Arriving Time is " << t[n]->getArrivalTime() << endl;
+			cout << "Thread " << execfile[n] << " is not arrived yet!" << endl;
+		}
+		else{
+			cout << "Thread " << execfile[n] << " is executing." << endl;
+		}
+
+		if(debug->IsEnabled(dbgKaiZhe)){
+			kernel->scheduler->CurrentThreadPrint();
+		    kernel->scheduler->ReadyListPrint();
+		}
 	}
+	if(debug->IsEnabled(dbgKaiZhe)){
+		kernel->scheduler->CurrentThreadPrint();
+	    kernel->scheduler->ReadyListPrint();
+	}
+
 //	Thread *t1 = new Thread(execfile[1]);
 //	Thread *t1 = new Thread("../test/test1");
 //	Thread *t2 = new Thread("../test/test2");

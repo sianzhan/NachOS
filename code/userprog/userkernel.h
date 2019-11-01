@@ -45,7 +45,7 @@ class UserProgKernel : public ThreadedKernel {
 	int	execfileNum;
 
     int prior[10];
-    int arrivalTime[10];
+    double arrivalTime[10];
     int burstTime[10];
 };
 

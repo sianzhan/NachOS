@@ -62,8 +62,10 @@ const int StackSize = (4 * 1024);	// in words
 
 
 // Thread state
-enum ThreadStatus { JUST_CREATED, RUNNING, READY, BLOCKED };
+enum ThreadStatus { JUST_CREATED, RUNNING, READY, BLOCKED, NOTARRIVED };
 
+// string
+extern char* threadstatus[];
 
 // The following class defines a "thread control block" -- which
 // represents a single thread of execution.
@@ -103,6 +105,7 @@ class Thread {
     
     void CheckOverflow();   	// Check if thread stack has overflowed
     void setStatus(ThreadStatus st) { status = st; }
+    int getStatus() {return status;}
     void setBurstTime(int t)	{burstTime = t;}
     int getBurstTime()		{return burstTime;}
     void setPriority(int t)	{priority = t;}
@@ -111,6 +114,7 @@ class Thread {
     int getArrivalTime()       {return arrivalTime;}
     char* getName() { return (name); }
     void Print();
+    void CheckArrivalTime();
     void SelfTest();		// test whether thread impl is working
 
   private:
@@ -144,7 +148,8 @@ class Thread {
 };
 
 // external function, dummy routine whose sole job is to call Thread::Print
-extern void ThreadPrint(Thread *thread);	 
+extern void ThreadPrint(Thread *thread);	
+extern void ThreadCheckArrivalTime(Thread *t); 
 
 // Magical machine-dependent routines, defined in switch.s
 

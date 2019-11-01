@@ -53,7 +53,7 @@ List<T>::List()
 
 template <class T>
 List<T>::~List()
-{ 
+{
     ASSERT(IsEmpty());		// make sure list is empty
 }
 
@@ -157,18 +157,19 @@ List<T>::Remove(T item)
     if (item == first->item) {	
         removed = RemoveFront();
         ASSERT(item == removed);
-    } else {
-	prev = first;
+    } 
+    else {
+	   prev = first;
         for (ptr = first->next; ptr != NULL; prev = ptr, ptr = ptr->next) {
             if (item == ptr->item) {
-		prev->next = ptr->next;
-		if (prev->next == NULL) {
-		    last = prev;
-		}
-		delete ptr;
-		numInList--;
-		break;
-	    }
+        		prev->next = ptr->next;
+        		if (prev->next == NULL) {
+        		    last = prev;
+        		}
+        		delete ptr;
+        		numInList--;
+        		break;
+    	    }
         }
 	ASSERT(ptr != NULL);	// should always find item!
     }

@@ -99,6 +99,9 @@ class Interrupt {
     void YieldOnReturn();	// cause a context switch on return 
 				// from an interrupt handler
 
+    // some threads have arrived, set yield to true for PROMPT option
+    void YieldFromArrivedThread();
+
     MachineStatus getStatus() { return status; } 
     void setStatus(MachineStatus st) { status = st; }
         			// idle, kernel, user

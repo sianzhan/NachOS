@@ -29,7 +29,7 @@
 -> 231
 
 # PP
-./nachos -e ../test/test2 -p 3 -e ../test/test1 -p 2 -t 1 -T PP
+./nachos -e ../test/test2 -p 3 -e ../test/test1 -p 2 -t 3 -T PP
 -> 212
 ./nachos -e ../test/test2 -p 3 -e ../test/test1 -p 2 -t 3 -e ../test/test3 -p 1 -t 20 -T PP
 -> 21312

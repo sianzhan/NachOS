@@ -113,9 +113,14 @@ class Thread {
     void setArrivalTime(int t) {arrivalTime = t;}
     int getArrivalTime()       {return arrivalTime;}
     char* getName() { return (name); }
+    void SelfTest();		// test whether thread impl is working
+    int getRealBurstTime(){return realBurstTime;}
+    int getWaitingTime(){return waitingTime;}
+
     void Print();
     void CheckArrivalTime();
-    void SelfTest();		// test whether thread impl is working
+    void UpdateBurstTime();
+    void UpdateWaitingTime();
 
   private:
     // some of the private data for this class is listed above
@@ -128,6 +133,9 @@ class Thread {
     int burstTime;
     int priority;
     int arrivalTime;
+
+    int waitingTime;
+    int realBurstTime;
     void StackAllocate(VoidFunctionPtr func, void *arg);
     				// Allocate a stack for thread.
 				// Used internally by Fork()
@@ -150,6 +158,7 @@ class Thread {
 // external function, dummy routine whose sole job is to call Thread::Print
 extern void ThreadPrint(Thread *thread);	
 extern void ThreadCheckArrivalTime(Thread *t); 
+extern void ThreadUpdateWaitingTime(Thread *t);
 
 // Magical machine-dependent routines, defined in switch.s
 

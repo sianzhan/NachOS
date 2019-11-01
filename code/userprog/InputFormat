@@ -34,3 +34,8 @@
 ./nachos -e ../test/test2 -p 3 -e ../test/test1 -p 2 -t 3 -e ../test/test3 -p 1 -t 20 -T PP
 -> 21312
 
+
+# Bonus Question
+./nachos -e ../test/test2
+./nachos -e ../test/test2 -e ../test/test1
+./nachos -e ../test/test2 -e ../test/test1 -T FCFS

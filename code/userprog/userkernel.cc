@@ -281,3 +281,26 @@ UserProgKernel::SelfTest() {
 
 //	cout << "This is self test message from UserProgKernel\n" ;
 }
+
+
+// print statistics of the process waiting time and burst time
+void
+UserProgKernel::Print(){
+	cout << "\n----------------\nBonus Part!\n";
+	int totalWaitingTime = 0;
+	int totalTurnAroundTime = 0;
+	for (int n=1;n<=execfileNum;n++)
+	{
+		if(t[n]){
+			cout <<  "ThreadName: " << t[n]->getName() << '\t'; 
+		    cout <<  "Used Burst Time: " << t[n]->getRealBurstTime() << '\t'; 
+		    cout << "Waiting Time: " << t[n]->getWaitingTime() << '\t';
+		    cout << "Turn around Time: " << t[n]->getRealBurstTime() + t[n]->getWaitingTime() << '\n';
+		    totalTurnAroundTime += t[n]->getRealBurstTime() + t[n]->getWaitingTime();
+		    totalWaitingTime += t[n]->getWaitingTime();
+		}
+	}
+	cout << "Average Waiting Time: " << (double)totalWaitingTime / execfileNum << '\n';
+	cout << "Average Turn Around Time: " << (double)totalTurnAroundTime / execfileNum << '\n';
+	cout << "----------------\n";
+}

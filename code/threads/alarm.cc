@@ -58,8 +58,8 @@ Alarm::CallBack()
     if (status == IdleMode && !hasReadyThread && _threadCollection.IsEmpty()) 
     {	// is it time to quit?
         if (!interrupt->AnyFutureInterrupts()) {
-	    timer->Disable();	// turn off the timer
-	}
+    	    timer->Disable();	// turn off the timer
+    	}
     } else 
     {			// there's someone to preempt
     	if(kernel->scheduler->getSchedulerType() == RR ||

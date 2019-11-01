@@ -44,8 +44,11 @@ class Scheduler {
 	void CurrentThreadPrint();			// Print contents of current thread
 	void CheckArrivalTime();		// check arrival time
     	
-    	void setSchedulerType(SchedulerType t) {schedulerType = t;}
+    void setSchedulerType(SchedulerType t) {schedulerType = t;}
 	SchedulerType getSchedulerType() {return schedulerType;}
+
+	void UpdateBurstTime();
+	void UpdateWaitingTime();
 
     // SelfTest for scheduler is implemented in class Thread
     

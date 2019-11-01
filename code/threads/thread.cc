@@ -58,6 +58,10 @@ Thread::Thread(char* threadName)
 					// new thread ignores contents 
 					// of machine registers
     }
+
+    waitingTime = 0;
+    realBurstTime = 0;
+
 #ifdef USER_PROGRAM
     space = NULL;
 #endif
@@ -300,6 +304,7 @@ static void ThreadFinish()    { kernel->currentThread->Finish(); }
 static void ThreadBegin() { kernel->currentThread->Begin(); }
 void ThreadPrint(Thread *t) { t->Print(); }
 void ThreadCheckArrivalTime(Thread *t) { t->CheckArrivalTime(); }
+void ThreadUpdateWaitingTime(Thread *t) { t->UpdateWaitingTime(); }
 
 #ifdef PARISC
 
@@ -515,5 +520,28 @@ void Thread::CheckArrivalTime(){
 
         kernel->interrupt->YieldFromArrivedThread();
     }
+}
+
+
+void Thread::UpdateWaitingTime(){
+    if(status == READY){
+        if(kernel->interrupt->getStatus() == SystemMode){
+            // waitingTime += SystemTick;
+        }
+        else{
+            waitingTime += UserTick;
+        }
+    }
+}
+
+void Thread::UpdateBurstTime(){
+    ASSERT(status == RUNNING)
+    if(kernel->interrupt->getStatus() == SystemMode){
+        // realBurstTime += SystemTick;
+    }
+    else{
+        realBurstTime += UserTick;
+    }
+    
 }
 

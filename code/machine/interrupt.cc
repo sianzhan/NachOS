@@ -189,6 +189,11 @@ Interrupt::OneTick()
 
     // check whether a thread has arrived
     kernel->scheduler->CheckArrivalTime();
+
+
+    // Record and update every burst time from current thread, and waiting time from ready list thread
+    kernel->scheduler->UpdateBurstTime();
+    kernel->scheduler->UpdateWaitingTime();
 }
 
 //----------------------------------------------------------------------
@@ -251,6 +256,7 @@ Interrupt::Halt()
 {
     cout << "Machine halting!\n\n";
     kernel->stats->Print();
+    kernel->Print();
     delete kernel;	// Never returns.
 }
 

@@ -291,3 +291,12 @@ void
 Scheduler::CheckArrivalTime(){
     readyList->Apply(ThreadCheckArrivalTime);
 }
+
+
+void Scheduler::UpdateBurstTime(){
+    kernel->currentThread->UpdateBurstTime();
+}
+
+void Scheduler::UpdateWaitingTime(){
+    readyList->Apply(ThreadUpdateWaitingTime);
+}

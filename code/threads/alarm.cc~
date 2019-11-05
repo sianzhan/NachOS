@@ -118,18 +118,27 @@ Alarm::CallBack()
     Interrupt *interrupt = kernel->interrupt;
     MachineStatus status = interrupt->getStatus();
     
-    bool hasWaken = CheckShouldWake();
-
-    kernel->currentThread->setPriority(kernel->currentThread >getPriority() - 1);
-
+<<<<<<< HEAD
+    bool hasWaken = CheckShouldWake();    
+    
     if (status == IdleMode && !hasWaken) {	// is it time to quit?
         if (!interrupt->AnyFutureInterrupts() && sleeping->IsEmpty()) {
 	        timer->Disable();	// turn off the timer
 	    }
     } else {			// there's someone to preempt
+	    interrupt->YieldOnReturn();
+=======
+    kernel->currentThread->setPriority(kernel->currentThread->getPriority() - 1);
+    if (status == IdleMode) {	// is it time to quit?
+        if (!interrupt->AnyFutureInterrupts()) {
+	    timer->Disable();	// turn off the timer
+	}
+    } else {			// there's someone to preempt
 	if(kernel->scheduler->getSchedulerType() == RR ||
             kernel->scheduler->getSchedulerType() == Priority ) {
 		interrupt->YieldOnReturn();
+	}
+>>>>>>> 7772ff498847eef3b8dbfdc9ad1506dbd4962a8e
     }
 }
 

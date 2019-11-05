@@ -51,20 +51,27 @@ SwapHeader (NoffHeader *noffH)
 //	only uniprogramming, and we have a single unsegmented page table
 //----------------------------------------------------------------------
 
+bool 
+AddrSpace::isUsedPhysPages[NumPhysPages] = { 0 };
+
+int 
+AddrSpace::numAvailPhysPages = NumPhysPages;
+
 AddrSpace::AddrSpace()
 {
+    /*
     pageTable = new TranslationEntry[NumPhysPages];
-    for (unsigned int i = 0; i < NumPhysPages; i++) {
-	pageTable[i].virtualPage = i;	// for now, virt page # = phys page #
-	pageTable[i].physicalPage = i;
-//	pageTable[i].physicalPage = 0;
-	pageTable[i].valid = TRUE;
-//	pageTable[i].valid = FALSE;
-	pageTable[i].use = FALSE;
-	pageTable[i].dirty = FALSE;
-	pageTable[i].readOnly = FALSE;  
-    }
-    
+        for (unsigned int i = 0; i < NumPhysPages; i++) {
+	    pageTable[i].virtualPage = i;	// for now, virt page # = phys page #
+	    pageTable[i].physicalPage = i;
+//	    pageTable[i].physicalPage = 0;
+	    pageTable[i].valid = TRUE;
+//	    pageTable[i].valid = FALSE;
+	    pageTable[i].use = FALSE;
+	    pageTable[i].dirty = FALSE;
+	    pageTable[i].readOnly = FALSE;  
+        }
+    */
     // zero out the entire address space
 //    bzero(kernel->machine->mainMemory, MemorySize);
 }
@@ -76,6 +83,10 @@ AddrSpace::AddrSpace()
 
 AddrSpace::~AddrSpace()
 {
+    for(unsigned int i = 0; i < numPages; i++){
+        AddrSpace::isUsedPhysPages[pageTable[i].physicalPage] = 0;
+        AddrSpace::numAvailPhysPages++;
+    }
    delete pageTable;
 }
 
@@ -113,28 +124,55 @@ AddrSpace::Load(char *fileName)
 						// to leave room for the stack
     numPages = divRoundUp(size, PageSize);
 //	cout << "number of pages of " << fileName<< " is "<<numPages<<endl;
-    size = numPages * PageSize;
-
+	
     ASSERT(numPages <= NumPhysPages);		// check we're not trying
 						// to run anything too big --
 						// at least until we have
 						// virtual memory
-
+    size = numPages * PageSize;
     DEBUG(dbgAddr, "Initializing address space: " << numPages << ", " << size);
 
-// then, copy in the code and data segments into memory
-	if (noffH.code.size > 0) {
-        DEBUG(dbgAddr, "Initializing code segment.");
-	DEBUG(dbgAddr, noffH.code.virtualAddr << ", " << noffH.code.size);
-        	executable->ReadAt(
-		&(kernel->machine->mainMemory[noffH.code.virtualAddr]), 
+    // page table of this process
+    pageTable = new TranslationEntry[numPages];
+
+    for (unsigned int i = 0, j = 0; i < numPages; ++i) {
+	pageTable[i].virtualPage = i;
+
+	// Loop until a available physical page is found
+	while (j < NumPhysPages && isUsedPhysPages[j]) ++j;
+
+	--numAvailPhysPages;	// Decrease the counter of available physical pages by 1
+	isUsedPhysPages[j] = 1; // Mark this page as used
+	bzero(&(kernel->machine->mainMemory[j * PageSize]), PageSize);	// Clean the memory for the new process
+
+	pageTable[i].physicalPage = j;	// The i'th virtual page now map to j'th physical page
+	pageTable[i].valid = TRUE;
+	pageTable[i].use = FALSE;
+	pageTable[i].dirty = FALSE;
+	pageTable[i].readOnly = FALSE;
+
+    }
+
+    // then, copy in the code and data segments into memory
+    if (noffH.code.size > 0) {
+   	DEBUG(dbgAddr, "Initializing code segment.");
+    	DEBUG(dbgAddr, noffH.code.virtualAddr << ", " << noffH.code.size);
+        
+	unsigned int physicalAddr = ((pageTable[noffH.code.virtualAddr / PageSize].physicalPage) * PageSize) // Dereference the address of virtual page onto phys memory
+				+ noffH.code.virtualAddr % PageSize; // Add offset
+    	executable->ReadAt(
+		&(kernel->machine->mainMemory[physicalAddr]), 
 			noffH.code.size, noffH.code.inFileAddr);
     }
-	if (noffH.initData.size > 0) {
+
+    if (noffH.initData.size > 0) {
         DEBUG(dbgAddr, "Initializing data segment.");
 	DEBUG(dbgAddr, noffH.initData.virtualAddr << ", " << noffH.initData.size);
-        executable->ReadAt(
-		&(kernel->machine->mainMemory[noffH.initData.virtualAddr]),
+        
+	unsigned int physicalAddr = ((pageTable[noffH.initData.virtualAddr / PageSize].physicalPage) * PageSize) // Dereference the address of virtual page onto phys memory
+				+ noffH.initData.virtualAddr % PageSize; // Add offset
+	executable->ReadAt(
+		&(kernel->machine->mainMemory[physicalAddr]),
 			noffH.initData.size, noffH.initData.inFileAddr);
     }
 

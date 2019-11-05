@@ -120,7 +120,7 @@ Alarm::CallBack()
     
     bool hasWaken = CheckShouldWake();
 
-    kernel->currentThread->setPriority(kernel->currentThread >getPriority() - 1);
+    kernel->currentThread->setPriority(kernel->currentThread->getPriority() - 1);
 
     if (status == IdleMode && !hasWaken) {	// is it time to quit?
         if (!interrupt->AnyFutureInterrupts() && sleeping->IsEmpty()) {
@@ -130,6 +130,7 @@ Alarm::CallBack()
 	if(kernel->scheduler->getSchedulerType() == RR ||
             kernel->scheduler->getSchedulerType() == Priority ) {
 		interrupt->YieldOnReturn();
+	}
     }
 }
 

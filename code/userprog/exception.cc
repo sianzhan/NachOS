@@ -25,6 +25,12 @@
 #include "main.h"
 #include "syscall.h"
 
+// for showing purpose
+static char* exceptionNames[] = { "no exception", "syscall", 
+				"page fault/no TLB entry", "page read only",
+				"bus error", "address error", "overflow",
+				"illegal instruction" };
+
 //----------------------------------------------------------------------
 // ExceptionHandler
 // 	Entry point into the Nachos kernel.  Called when a user program
@@ -74,7 +80,7 @@ ExceptionHandler(ExceptionType which)
 			cout << "Sleep called! Waiting Duration is " << val << "(ms)" << endl;
 			kernel->alarm->WaitUntil(val);
 			return;
-/*		case SC_Exec:
+		/*case SC_Exec:
 			DEBUG(dbgAddr, "Exec\n");
 			val = kernel->machine->ReadRegister(4);
 			kernel->StringCopy(tmpStr, retVal, 1024);
@@ -82,7 +88,8 @@ ExceptionHandler(ExceptionType which)
 			val = kernel->Exec(val);
 			kernel->machine->WriteRegister(2, val);
 			return;
-*/		case SC_Exit:
+		*/		
+		case SC_Exit:
 			DEBUG(dbgAddr, "Program exit\n");
 			val=kernel->machine->ReadRegister(4);
 			cout << "return value:" << val << endl;
@@ -94,7 +101,7 @@ ExceptionHandler(ExceptionType which)
 	    }
 	    break;
 	default:
-	    cerr << "Unexpected user mode exception" << which << "\n";
+	    cerr << "Unexpected user mode exception: " << which << " -> " <<  exceptionNames[which] << "\n";
 	    break;
     }
     ASSERTNOTREACHED();

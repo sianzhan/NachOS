@@ -55,14 +55,14 @@ Machine::Run()
 
     if (debug->IsEnabled('m')) {
         cout << "Starting program in thread: " << kernel->currentThread->getName();
-	cout << ", at time: " << kernel->stats->totalTicks << "\n";
+		cout << ", at time: " << kernel->stats->totalTicks << "\n";
     }
     kernel->interrupt->setStatus(UserMode);
     for (;;) {
         OneInstruction(instr);
-	kernel->interrupt->OneTick();
-	if (singleStep && (runUntilTime <= kernel->stats->totalTicks))
-	  Debugger();
+		kernel->interrupt->OneTick();
+		if (singleStep && (runUntilTime <= kernel->stats->totalTicks))
+			Debugger();
     }
 }
 
@@ -122,18 +122,18 @@ Machine::OneInstruction(Instruction *instr)
 
     // Fetch instruction 
     if (!ReadMem(registers[PCReg], 4, &raw))
-	return;			// exception occurred
+		return;			// exception occurred
     instr->value = raw;
     instr->Decode();
 
     if (debug->IsEnabled('m')) {
         struct OpString *str = &opStrings[instr->opCode];
-	char buf[80];
+		char buf[80];
 
         ASSERT(instr->opCode <= MaxOpcode);
         cout << "At PC = " << registers[PCReg];
-	sprintf(buf, str->format, TypeToReg(str->args[0], instr),
-	     TypeToReg(str->args[1], instr), TypeToReg(str->args[2], instr));
+		sprintf(buf, str->format, TypeToReg(str->args[0], instr),
+	    TypeToReg(str->args[1], instr), TypeToReg(str->args[2], instr));
         cout << "\t" << buf << "\n";
     }
     

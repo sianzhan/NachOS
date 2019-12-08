@@ -151,7 +151,7 @@ AddrSpace::Load(char *fileName)
     // code first
 	if (noffH.code.size > 0) {
         DEBUG(dbgAddr, "Initializing code segment.");
-        DEBUG(dbgAddr, noffH.code.virtualAddr << ", " << noffH.code.size);
+        DEBUG(dbgAddr, "Code segment VA " << noffH.code.virtualAddr << ", Code Size " << noffH.code.size);
 
         // read the physical address location
         executable->ReadAt(
@@ -162,7 +162,7 @@ AddrSpace::Load(char *fileName)
     // init data next
 	if (noffH.initData.size > 0) {
         DEBUG(dbgAddr, "Initializing data segment.");
-        DEBUG(dbgAddr, noffH.initData.virtualAddr << ", " << noffH.initData.size);
+        DEBUG(dbgAddr, "InitData segment VA " <<  noffH.initData.virtualAddr << ", InitData size " << noffH.initData.size);
 
         // read the physical address location
         executable->ReadAt(

@@ -58,19 +58,24 @@ Machine::Machine(bool debug)
 
     for (i = 0; i < NumTotalRegs; i++)
         registers[i] = 0;
+
     mainMemory = new char[MemorySize];
+
     for (i = 0; i < MemorySize; i++)
       	mainMemory[i] = 0;
+
 #ifdef USE_TLB
     tlb = new TranslationEntry[TLBSize];
     for (i = 0; i < TLBSize; i++)
-	tlb[i].valid = FALSE;
+	   tlb[i].valid = FALSE;
+
     pageTable = NULL;
+
 #else	// use linear page table
     tlb = NULL;
     pageTable = NULL;
-#endif
 
+#endif
     singleStep = debug;
     CheckEndian();
 }
@@ -131,24 +136,24 @@ void Machine::Debugger()
     cout << kernel->stats->totalTicks << ">";
     cin.get(buf, 80, '\n');
     if (sscanf(buf, "%d", &num) == 1)
-	runUntilTime = num;
+	   runUntilTime = num;
     else {
-	runUntilTime = 0;
-	switch (*buf) {
-	  case '\n':
-	    break;
-	    
-	  case 'c':
-	    singleStep = FALSE;
-	    break;
-	    
-	  case '?':
-	    cout << "Machine commands:\n";
-	    cout << "    <return>  execute one instruction\n";
-	    cout << "    <number>  run until the given timer tick\n";
-	    cout << "    c         run until completion\n";
-	    cout << "    ?         print help message\n";
-	    break;
+    	runUntilTime = 0;
+    	switch (*buf) {
+    	  case '\n':
+    	    break;
+    	    
+    	  case 'c':
+    	    singleStep = FALSE;
+    	    break;
+    	    
+    	  case '?':
+    	    cout << "Machine commands:\n";
+    	    cout << "    <return>  execute one instruction\n";
+    	    cout << "    <number>  run until the given timer tick\n";
+    	    cout << "    c         run until completion\n";
+    	    cout << "    ?         print help message\n";
+    	    break;
 	}
     }
     delete [] buf;

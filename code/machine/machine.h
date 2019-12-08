@@ -34,7 +34,8 @@ const unsigned int NumPhysPages = 64;
 const int MemorySize = (NumPhysPages * PageSize);
 const int TLBSize = 4;			// if there is a TLB, make it small
 
-enum ExceptionType { NoException,           // Everything ok!
+enum ExceptionType { 
+			NoException,           // Everything ok!
 		     SyscallException,      // A program executed a system call.
 		     PageFaultException,    // No valid translation found
 		     ReadOnlyException,     // Write attempted to page marked 

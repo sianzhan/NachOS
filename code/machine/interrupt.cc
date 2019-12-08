@@ -256,7 +256,9 @@ Interrupt::Halt()
 {
     cout << "Machine halting!\n\n";
     kernel->stats->Print();
-    kernel->Print();
+
+    // only print bonus part if the input has set it
+    if(debug->IsEnabled(dbgBonusPart))   kernel->Print();
     delete kernel;	// Never returns.
 }
 

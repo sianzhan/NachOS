@@ -31,6 +31,7 @@ const char dbgNet = 'n'; 		// network emulation (NETWORK)
 
 // my dbg flag
 const char dbgKaiZhe = 'k';
+const char dbgBonusPart = 'b';
 
 class Debug {
   public:

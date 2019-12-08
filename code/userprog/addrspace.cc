@@ -107,38 +107,37 @@ AddrSpace::Load(char *fileName)
     unsigned int size;
 
     if (executable == NULL) {
-	cerr << "Unable to open file " << fileName << "\n";
-	return FALSE;
+    	cerr << "Unable to open file " << fileName << "\n";
+    	return FALSE;
     }
     executable->ReadAt((char *)&noffH, sizeof(noffH), 0);
+
     if ((noffH.noffMagic != NOFFMAGIC) && 
 		(WordToHost(noffH.noffMagic) == NOFFMAGIC))
     	SwapHeader(&noffH);
-    ASSERT(noffH.noffMagic == NOFFMAGIC);
+        ASSERT(noffH.noffMagic == NOFFMAGIC);
 
-// how big is address space?
+    // how big is address space?
     size = noffH.code.size + noffH.initData.size + noffH.uninitData.size 
 			+ UserStackSize;	// we need to increase the size
 						// to leave room for the stack
     numPages = divRoundUp(size, PageSize);
-//	cout << "number of pages of " << fileName<< " is "<<numPages<<endl;
+    //	cout << "number of pages of " << fileName<< " is "<<numPages<<endl;
     size = numPages * PageSize;
 
     // build our pageTable
     pageTable = new TranslationEntry[numPages];
     for (unsigned int i = 0, j = 0; i < numPages; i++) {
-    pageTable[i].virtualPage = i;   // for now, virt page # = phys page #
+        pageTable[i].virtualPage = i;   // for now, virt page # = phys page #, this wouldn't use probably
 
-    while(AddrSpace::usedPhyPage[j++] == TRUE); // it the physical page has been used, iterative check the next one
+        while(AddrSpace::usedPhyPage[j++] == TRUE); // it the physical page has been used, iterative check the next one
 
-    AddrSpace::usedPhyPage[j-1] = TRUE;
-    pageTable[i].physicalPage = j-1;
-//  pageTable[i].physicalPage = 0;
-    pageTable[i].valid = TRUE;
-//  pageTable[i].valid = FALSE;
-    pageTable[i].use = FALSE;
-    pageTable[i].dirty = FALSE;
-    pageTable[i].readOnly = FALSE;  
+        AddrSpace::usedPhyPage[j-1] = TRUE;
+        pageTable[i].physicalPage = j-1;
+        pageTable[i].valid = TRUE;
+        pageTable[i].use = FALSE;
+        pageTable[i].dirty = FALSE;
+        pageTable[i].readOnly = FALSE;  
     }
 
     ASSERT(numPages <= NumPhysPages);		// check we're not trying
@@ -148,24 +147,25 @@ AddrSpace::Load(char *fileName)
 
     DEBUG(dbgAddr, "Initializing address space: " << numPages << ", " << size);
 
-// then, copy in the code and data segments into memory
+    // then, copy in the code and data segments into memory
+    // code first
 	if (noffH.code.size > 0) {
         DEBUG(dbgAddr, "Initializing code segment.");
-	DEBUG(dbgAddr, noffH.code.virtualAddr << ", " << noffH.code.size);
-  //       	executable->ReadAt(
-		// &(kernel->machine->mainMemory[noffH.code.virtualAddr]), 
-		// 	noffH.code.size, noffH.code.inFileAddr);
-    executable->ReadAt(
+        DEBUG(dbgAddr, noffH.code.virtualAddr << ", " << noffH.code.size);
+
+        // read the physical address location
+        executable->ReadAt(
          &(kernel->machine->mainMemory[pageTable[noffH.code.virtualAddr/PageSize].physicalPage * PageSize + (noffH.code.virtualAddr % PageSize)]), 
           noffH.code.size, noffH.code.inFileAddr);
     }
+
+    // init data next
 	if (noffH.initData.size > 0) {
         DEBUG(dbgAddr, "Initializing data segment.");
-	DEBUG(dbgAddr, noffH.initData.virtualAddr << ", " << noffH.initData.size);
-  //       executable->ReadAt(
-		// &(kernel->machine->mainMemory[noffH.initData.virtualAddr]),
-		// 	noffH.initData.size, noffH.initData.inFileAddr);
-    executable->ReadAt(
+        DEBUG(dbgAddr, noffH.initData.virtualAddr << ", " << noffH.initData.size);
+
+        // read the physical address location
+        executable->ReadAt(
          &(kernel->machine->mainMemory[pageTable[noffH.initData.virtualAddr/PageSize].physicalPage * PageSize + (noffH.initData.virtualAddr % PageSize)]), 
           noffH.initData.size, noffH.initData.inFileAddr);
     }
@@ -219,7 +219,7 @@ AddrSpace::InitRegisters()
     int i;
 
     for (i = 0; i < NumTotalRegs; i++)
-	machine->WriteRegister(i, 0);
+	   machine->WriteRegister(i, 0);
 
     // Initial program counter -- must be location of "Start"
     machine->WriteRegister(PCReg, 0);	

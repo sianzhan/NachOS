@@ -320,7 +320,7 @@ Machine::OneInstruction(Instruction *instr)
 			switch (tmp & 0x3) {
 			  case 0:
 			    nextLoadValue = value;
-			    bresak;
+			    break;
 			  case 1:
 			    nextLoadValue = (nextLoadValue & 0xff) | (value << 8);
 			    break;
@@ -497,6 +497,9 @@ Machine::OneInstruction(Instruction *instr)
 			break;
 	
       	case OP_SW:
+      		cout << "\nregisters[instr->rs] is " << registers[instr->rs] << '\n';
+      		cout << "instr->extra is " << instr->extra << '\n';
+      		cout << "registers[instr->rt] is " << registers[instr->rt] << '\n';
 			if (!WriteMem((unsigned) 
 				(registers[instr->rs] + instr->extra), 4, registers[instr->rt]))
 			    return;
@@ -582,7 +585,7 @@ Machine::OneInstruction(Instruction *instr)
 	
       	default:
 			ASSERT(FALSE);
-			
+
     }
     
     // Now we have successfully executed the instruction.

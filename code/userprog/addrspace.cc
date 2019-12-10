@@ -154,11 +154,19 @@ AddrSpace::Load(char *fileName)
 	if (noffH.code.size > 0) {
         DEBUG(dbgAddr, "Initializing code segment.");
         DEBUG(dbgAddr, "Code segment VA " << noffH.code.virtualAddr << ", Code Size " << noffH.code.size);
+	
+        unsigned int numPageToWrite = divRoundUp(noffH.code.size, PageSize);
+        unsigned int indexFirstVirtualPage = noffH.code.virtualAddr / PageSize;
+        unsigned int offsetFirstVirtualPage = noffH.code.virtualAddr % PageSize;
 
-        // read the physical address location
-        executable->ReadAt(
-         &(kernel->machine->mainMemory[pageTable[noffH.code.virtualAddr/PageSize].physicalPage * PageSize + (noffH.code.virtualAddr % PageSize)]), 
-          noffH.code.size, noffH.code.inFileAddr);
+        unsigned int i;
+	    for (i = 0; i < numPageToWrite; ++i) {
+            unsigned int addrPhysicalPage = pageTable[indexFirstVirtualPage + i].physicalPage * PageSize; // Calculate address of physical page (without offset)
+            unsigned int addrInFile = noffH.code.inFileAddr + i * PageSize; // Add offset to read from file
+	        executable->ReadAt(
+             &(kernel->machine->mainMemory[addrPhysicalPage + offsetFirstVirtualPage]), 
+              PageSize, addrInFile);
+	    }
     }
 
     // init data next
@@ -166,10 +174,18 @@ AddrSpace::Load(char *fileName)
         DEBUG(dbgAddr, "Initializing data segment.");
         DEBUG(dbgAddr, "InitData segment VA " <<  noffH.initData.virtualAddr << ", InitData size " << noffH.initData.size);
 
-        // read the physical address location
-        executable->ReadAt(
-         &(kernel->machine->mainMemory[pageTable[noffH.initData.virtualAddr/PageSize].physicalPage * PageSize + (noffH.initData.virtualAddr % PageSize)]), 
-          noffH.initData.size, noffH.initData.inFileAddr);
+        unsigned int numPageToWrite = divRoundUp(noffH.code.size, PageSize);
+        unsigned int indexFirstVirtualPage = noffH.initData.virtualAddr / PageSize;
+        unsigned int offsetFirstVirtualPage = noffH.initData.virtualAddr % PageSize;
+
+        unsigned int i;
+	    for (i = 0; i < numPageToWrite; ++i) {
+            unsigned int addrPhysicalPage = pageTable[indexFirstVirtualPage + i].physicalPage * PageSize; // Calculate address of physical page (without offset)
+            unsigned int addrInFile = noffH.initData.inFileAddr + i * PageSize; // Add offset to read from file
+	        executable->ReadAt(
+             &(kernel->machine->mainMemory[addrPhysicalPage + offsetFirstVirtualPage]), 
+              PageSize, addrInFile);
+	    }
     }
 
     delete executable;			// close file

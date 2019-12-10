@@ -497,9 +497,9 @@ Machine::OneInstruction(Instruction *instr)
 			break;
 	
       	case OP_SW:
-      		cout << "\nregisters[instr->rs] is " << registers[instr->rs] << '\n';
-      		cout << "instr->extra is " << instr->extra << '\n';
-      		cout << "registers[instr->rt] is " << registers[instr->rt] << '\n';
+      		// cout << "\nregisters[instr->rs] is " << registers[instr->rs] << '\n';
+      		// cout << "instr->extra is " << instr->extra << '\n';
+      		// cout << "registers[instr->rt] is " << registers[instr->rt] << '\n';
 			if (!WriteMem((unsigned) 
 				(registers[instr->rs] + instr->extra), 4, registers[instr->rt]))
 			    return;

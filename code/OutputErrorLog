@@ -1,0 +1,728 @@
+Total threads number is 3
+Thread test/stackTesting1 is executing.
+Thread test/stackTesting2 is executing.
+Thread test/stackTesting3 is executing.
+Initializing address space: 12, 1536
+Initializing code segment.
+Code segment VA 0, Code Size 448
+Initializing stack pointer: 1520
+Reading VA 0, size 4
+	Translate 0 , read
+phys addr = 0
+	value read = 201326660
+Reading VA 4, size 4
+	Translate 4 , read
+phys addr = 4
+	value read = 0
+Reading VA 272, size 4
+	Translate 272 , read
+phys addr = 272
+	value read = 666763152
+Reading VA 276, size 4
+	Translate 276 , read
+phys addr = 276
+	value read = -1346437012
+Writing VA 1516, size 4, value 8
+	Translate 1516 , write
+phys addr = 1516
+Reading VA 280, size 4
+	Translate 280 , read
+phys addr = 280
+	value read = -1346502552
+Writing VA 1512, size 4, value 0
+	Translate 1512 , write
+phys addr = 1512
+Reading VA 284, size 4
+	Translate 284 , read
+phys addr = 284
+	value read = 201326656
+Reading VA 288, size 4
+	Translate 288 , read
+phys addr = 288
+	value read = 60878881
+Reading VA 256, size 4
+	Translate 256 , read
+phys addr = 256
+	value read = 65011720
+Reading VA 260, size 4
+	Translate 260 , read
+phys addr = 260
+	value read = 0
+Reading VA 292, size 4
+	Translate 292 , read
+phys addr = 292
+	value read = -1346371488
+Writing VA 1504, size 4, value 0
+	Translate 1504 , write
+phys addr = 1504
+Reading VA 296, size 4
+	Translate 296 , read
+phys addr = 296
+	value read = -1883111328
+Reading VA 1504, size 4
+	Translate 1504 , read
+phys addr = 1504
+	value read = 0
+Reading VA 300, size 4
+	Translate 300 , read
+phys addr = 300
+	value read = 0
+Reading VA 304, size 4
+	Translate 304 , read
+phys addr = 304
+	value read = 675479572
+Reading VA 308, size 4
+	Translate 308 , read
+phys addr = 308
+	value read = 341835779
+Reading VA 312, size 4
+	Translate 312 , read
+phys addr = 312
+	value read = 0
+Reading VA 324, size 4
+	Translate 324 , read
+phys addr = 324
+	value read = -1883111328
+Reading VA 1504, size 4
+	Translate 1504 , read
+phys addr = 1504
+	value read = 0
+Reading VA 328, size 4
+	Translate 328 , read
+phys addr = 328
+	value read = 0
+Reading VA 332, size 4
+	Translate 332 , read
+phys addr = 332
+	value read = 4200481
+Reading VA 336, size 4
+	Translate 336 , read
+phys addr = 336
+	value read = 200832
+Reading VA 340, size 4
+	Translate 340 , read
+phys addr = 340
+	value read = 667090960
+Reading VA 344, size 4
+	Translate 344 , read
+phys addr = 344
+	value read = 6426657
+Reading VA 348, size 4
+	Translate 348 , read
+phys addr = 348
+	value read = -1883045792
+Reading VA 1504, size 4
+	Translate 1504 , read
+phys addr = 1504
+	value read = 0
+Reading VA 352, size 4
+	Translate 352 , read
+phys addr = 352
+	value read = 0
+Reading VA 356, size 4
+	Translate 356 , read
+phys addr = 356
+	value read = 610533476
+Reading VA 360, size 4
+	Translate 360 , read
+phys addr = 360
+	value read = -1404829696
+Writing VA 1424, size 4, value 100
+	Translate 1424 , write
+phys addr = 1424
+Reading VA 364, size 4
+	Translate 364 , read
+phys addr = 364
+	value read = -1883111328
+Reading VA 1504, size 4
+	Translate 1504 , read
+phys addr = 1504
+	value read = 0
+Reading VA 368, size 4
+	Translate 368 , read
+phys addr = 368
+	value read = 0
+Reading VA 372, size 4
+	Translate 372 , read
+phys addr = 372
+	value read = 4200481
+Reading VA 376, size 4
+	Translate 376 , read
+phys addr = 376
+	value read = 200832
+Reading VA 380, size 4
+	Translate 380 , read
+phys addr = 380
+	value read = 667090960
+Reading VA 384, size 4
+	Translate 384 , read
+phys addr = 384
+	value read = 6426657
+Reading VA 388, size 4
+	Translate 388 , read
+phys addr = 388
+	value read = -1941700608
+Reading VA 1424, size 4
+	Translate 1424 , read
+phys addr = 1424
+	value read = 100
+Reading VA 392, size 4
+	Translate 392 , read
+phys addr = 392
+	value read = 201326640
+Reading VA 396, size 4
+	Translate 396 , read
+phys addr = 396
+	value read = 0
+Reading VA 192, size 4
+	Translate 192 , read
+phys addr = 192
+	value read = 604110859
+Reading VA 196, size 4
+	Translate 196 , read
+phys addr = 196
+	value read = 12
+Print integer from process1 : 100
+Reading VA 200, size 4
+	Translate 200 , read
+phys addr = 200
+	value read = 65011720
+Reading VA 204, size 4
+	Translate 204 , read
+phys addr = 204
+	value read = 0
+Reading VA 400, size 4
+	Translate 400 , read
+phys addr = 400
+	value read = -1883111328
+Reading VA 1504, size 4
+	Translate 1504 , read
+phys addr = 1504
+	value read = 0
+Reading VA 404, size 4
+	Translate 404 , read
+phys addr = 404
+	value read = 0
+Reading VA 408, size 4
+	Translate 408 , read
+phys addr = 408
+	value read = 608370689
+Reading VA 412, size 4
+	Translate 412 , read
+phys addr = 412
+	value read = 134217802
+Reading VA 416, size 4
+	Translate 416 , read
+phys addr = 416
+	value read = -1346174880
+Writing VA 1504, size 4, value 1
+	Translate 1504 , write
+phys addr = 1504
+Reading VA 296, size 4
+	Translate 296 , read
+phys addr = 296
+	value read = -1883111328
+Reading VA 1504, size 4
+	Translate 1504 , read
+phys addr = 1504
+	value read = 1
+Reading VA 300, size 4
+	Translate 300 , read
+phys addr = 300
+	value read = 0
+Reading VA 304, size 4
+	Translate 304 , read
+phys addr = 304
+	value read = 675479572
+Reading VA 308, size 4
+	Translate 308 , read
+phys addr = 308
+	value read = 341835779
+Reading VA 312, size 4
+	Translate 312 , read
+phys addr = 312
+	value read = 0
+Reading VA 324, size 4
+	Translate 324 , read
+phys addr = 324
+	value read = -1883111328
+Reading VA 1504, size 4
+	Translate 1504 , read
+phys addr = 1504
+	value read = 1
+Reading VA 328, size 4
+	Translate 328 , read
+phys addr = 328
+	value read = 0
+Initializing address space: 12, 1536
+Initializing code segment.
+Code segment VA 0, Code Size 448
+Initializing stack pointer: 1520
+Reading VA 0, size 4
+	Translate 0 , read
+phys addr = 1536
+	value read = 201326660
+Reading VA 4, size 4
+	Translate 4 , read
+phys addr = 1540
+	value read = 0
+Reading VA 272, size 4
+	Translate 272 , read
+phys addr = 1808
+	value read = 666763152
+Reading VA 276, size 4
+	Translate 276 , read
+phys addr = 1812
+	value read = -1346437012
+Writing VA 1516, size 4, value 8
+	Translate 1516 , write
+phys addr = 3052
+Reading VA 280, size 4
+	Translate 280 , read
+phys addr = 1816
+	value read = -1346502552
+Writing VA 1512, size 4, value 0
+	Translate 1512 , write
+phys addr = 3048
+Reading VA 284, size 4
+	Translate 284 , read
+phys addr = 1820
+	value read = 201326656
+Reading VA 288, size 4
+	Translate 288 , read
+phys addr = 1824
+	value read = 60878881
+Reading VA 256, size 4
+	Translate 256 , read
+phys addr = 1792
+	value read = 65011720
+Reading VA 260, size 4
+	Translate 260 , read
+phys addr = 1796
+	value read = 0
+Reading VA 292, size 4
+	Translate 292 , read
+phys addr = 1828
+	value read = -1346371488
+Writing VA 1504, size 4, value 0
+	Translate 1504 , write
+phys addr = 3040
+Reading VA 296, size 4
+	Translate 296 , read
+phys addr = 1832
+	value read = -1883111328
+Reading VA 1504, size 4
+	Translate 1504 , read
+phys addr = 3040
+	value read = 0
+Reading VA 300, size 4
+	Translate 300 , read
+phys addr = 1836
+	value read = 0
+Reading VA 304, size 4
+	Translate 304 , read
+phys addr = 1840
+	value read = 675479572
+Reading VA 308, size 4
+	Translate 308 , read
+phys addr = 1844
+	value read = 341835779
+Reading VA 312, size 4
+	Translate 312 , read
+phys addr = 1848
+	value read = 0
+Reading VA 324, size 4
+	Translate 324 , read
+phys addr = 1860
+	value read = -1883111328
+Reading VA 1504, size 4
+	Translate 1504 , read
+phys addr = 3040
+	value read = 0
+Reading VA 328, size 4
+	Translate 328 , read
+phys addr = 1864
+	value read = 0
+Reading VA 332, size 4
+	Translate 332 , read
+phys addr = 1868
+	value read = 4200481
+Reading VA 336, size 4
+	Translate 336 , read
+phys addr = 1872
+	value read = 200832
+Reading VA 340, size 4
+	Translate 340 , read
+phys addr = 1876
+	value read = 667090960
+Reading VA 344, size 4
+	Translate 344 , read
+phys addr = 1880
+	value read = 6426657
+Reading VA 348, size 4
+	Translate 348 , read
+phys addr = 1884
+	value read = -1883045792
+Reading VA 1504, size 4
+	Translate 1504 , read
+phys addr = 3040
+	value read = 0
+Reading VA 352, size 4
+	Translate 352 , read
+phys addr = 1888
+	value read = 0
+Reading VA 356, size 4
+	Translate 356 , read
+phys addr = 1892
+	value read = 610533576
+Reading VA 360, size 4
+	Translate 360 , read
+phys addr = 1896
+	value read = -1404829696
+Writing VA 1424, size 4, value 200
+	Translate 1424 , write
+phys addr = 2960
+Reading VA 364, size 4
+	Translate 364 , read
+phys addr = 1900
+	value read = -1883111328
+Reading VA 1504, size 4
+	Translate 1504 , read
+phys addr = 3040
+	value read = 0
+Reading VA 368, size 4
+	Translate 368 , read
+phys addr = 1904
+	value read = 0
+Reading VA 372, size 4
+	Translate 372 , read
+phys addr = 1908
+	value read = 4200481
+Reading VA 376, size 4
+	Translate 376 , read
+phys addr = 1912
+	value read = 200832
+Reading VA 380, size 4
+	Translate 380 , read
+phys addr = 1916
+	value read = 667090960
+Reading VA 384, size 4
+	Translate 384 , read
+phys addr = 1920
+	value read = 6426657
+Reading VA 388, size 4
+	Translate 388 , read
+phys addr = 1924
+	value read = -1941700608
+Reading VA 1424, size 4
+	Translate 1424 , read
+phys addr = 2960
+	value read = 200
+Reading VA 392, size 4
+	Translate 392 , read
+phys addr = 1928
+	value read = 201326644
+Reading VA 396, size 4
+	Translate 396 , read
+phys addr = 1932
+	value read = 0
+Reading VA 208, size 4
+	Translate 208 , read
+phys addr = 1744
+	value read = 604110888
+Reading VA 212, size 4
+	Translate 212 , read
+phys addr = 1748
+	value read = 12
+Print integer from process2 : 200
+Reading VA 216, size 4
+	Translate 216 , read
+phys addr = 1752
+	value read = 65011720
+Reading VA 220, size 4
+	Translate 220 , read
+phys addr = 1756
+	value read = 0
+Reading VA 400, size 4
+	Translate 400 , read
+phys addr = 1936
+	value read = -1883111328
+Reading VA 1504, size 4
+	Translate 1504 , read
+phys addr = 3040
+	value read = 0
+Reading VA 404, size 4
+	Translate 404 , read
+phys addr = 1940
+	value read = 0
+Reading VA 408, size 4
+	Translate 408 , read
+phys addr = 1944
+	value read = 608370689
+Reading VA 412, size 4
+	Translate 412 , read
+phys addr = 1948
+	value read = 134217802
+Reading VA 416, size 4
+	Translate 416 , read
+phys addr = 1952
+	value read = -1346174880
+Writing VA 1504, size 4, value 1
+	Translate 1504 , write
+phys addr = 3040
+Reading VA 296, size 4
+	Translate 296 , read
+phys addr = 1832
+	value read = -1883111328
+Reading VA 1504, size 4
+	Translate 1504 , read
+phys addr = 3040
+	value read = 1
+Reading VA 300, size 4
+	Translate 300 , read
+phys addr = 1836
+	value read = 0
+Reading VA 304, size 4
+	Translate 304 , read
+phys addr = 1840
+	value read = 675479572
+Reading VA 308, size 4
+	Translate 308 , read
+phys addr = 1844
+	value read = 341835779
+Reading VA 312, size 4
+	Translate 312 , read
+phys addr = 1848
+	value read = 0
+Reading VA 324, size 4
+	Translate 324 , read
+phys addr = 1860
+	value read = -1883111328
+Reading VA 1504, size 4
+	Translate 1504 , read
+phys addr = 3040
+	value read = 1
+Reading VA 328, size 4
+	Translate 328 , read
+phys addr = 1864
+	value read = 0
+Reading VA 332, size 4
+	Translate 332 , read
+phys addr = 1868
+	value read = 4200481
+Reading VA 336, size 4
+	Translate 336 , read
+phys addr = 1872
+	value read = 200832
+Reading VA 340, size 4
+	Translate 340 , read
+phys addr = 1876
+	value read = 667090960
+Reading VA 344, size 4
+	Translate 344 , read
+phys addr = 1880
+	value read = 6426657
+Reading VA 348, size 4
+	Translate 348 , read
+phys addr = 1884
+	value read = -1883045792
+Reading VA 1504, size 4
+	Translate 1504 , read
+phys addr = 3040
+	value read = 1
+Reading VA 352, size 4
+	Translate 352 , read
+phys addr = 1888
+	value read = 0
+Reading VA 356, size 4
+	Translate 356 , read
+phys addr = 1892
+	value read = 610533576
+Reading VA 360, size 4
+	Translate 360 , read
+phys addr = 1896
+	value read = -1404829696
+Writing VA 1428, size 4, value 201
+	Translate 1428 , write
+phys addr = 2964
+Reading VA 364, size 4
+	Translate 364 , read
+phys addr = 1900
+	value read = -1883111328
+Reading VA 1504, size 4
+	Translate 1504 , read
+phys addr = 3040
+	value read = 1
+Reading VA 368, size 4
+	Translate 368 , read
+phys addr = 1904
+	value read = 0
+Reading VA 372, size 4
+	Translate 372 , read
+phys addr = 1908
+	value read = 4200481
+Reading VA 376, size 4
+	Translate 376 , read
+phys addr = 1912
+	value read = 200832
+Reading VA 380, size 4
+	Translate 380 , read
+phys addr = 1916
+	value read = 667090960
+Reading VA 384, size 4
+	Translate 384 , read
+phys addr = 1920
+	value read = 6426657
+Reading VA 388, size 4
+	Translate 388 , read
+phys addr = 1924
+	value read = -1941700608
+Reading VA 1428, size 4
+	Translate 1428 , read
+phys addr = 2964
+	value read = 201
+Reading VA 392, size 4
+	Translate 392 , read
+phys addr = 1928
+	value read = 201326644
+Reading VA 396, size 4
+	Translate 396 , read
+phys addr = 1932
+	value read = 0
+Reading VA 208, size 4
+	Translate 208 , read
+phys addr = 1744
+	value read = 604110888
+Reading VA 212, size 4
+	Translate 212 , read
+phys addr = 1748
+	value read = 12
+Print integer from process2 : 201
+Reading VA 216, size 4
+	Translate 216 , read
+phys addr = 1752
+	value read = 65011720
+Reading VA 220, size 4
+	Translate 220 , read
+phys addr = 1756
+	value read = 0
+Reading VA 400, size 4
+	Translate 400 , read
+phys addr = 1936
+	value read = -1883111328
+Reading VA 1504, size 4
+	Translate 1504 , read
+phys addr = 3040
+	value read = 1
+Reading VA 404, size 4
+	Translate 404 , read
+phys addr = 1940
+	value read = 0
+Reading VA 408, size 4
+	Translate 408 , read
+phys addr = 1944
+	value read = 608370689
+Reading VA 412, size 4
+	Translate 412 , read
+phys addr = 1948
+	value read = 134217802
+Reading VA 416, size 4
+	Translate 416 , read
+phys addr = 1952
+	value read = -1346174880
+Writing VA 1504, size 4, value 2
+	Translate 1504 , write
+phys addr = 3040
+Reading VA 296, size 4
+	Translate 296 , read
+phys addr = 1832
+	value read = -1883111328
+Reading VA 1504, size 4
+	Translate 1504 , read
+phys addr = 3040
+	value read = 2
+Reading VA 300, size 4
+	Translate 300 , read
+phys addr = 1836
+	value read = 0
+Reading VA 304, size 4
+	Translate 304 , read
+phys addr = 1840
+	value read = 675479572
+Reading VA 308, size 4
+	Translate 308 , read
+phys addr = 1844
+	value read = 341835779
+Reading VA 312, size 4
+	Translate 312 , read
+phys addr = 1848
+	value read = 0
+Reading VA 324, size 4
+	Translate 324 , read
+phys addr = 1860
+	value read = -1883111328
+Reading VA 1504, size 4
+	Translate 1504 , read
+phys addr = 3040
+	value read = 2
+Reading VA 328, size 4
+	Translate 328 , read
+phys addr = 1864
+	value read = 0
+Reading VA 332, size 4
+	Translate 332 , read
+phys addr = 1868
+	value read = 4200481
+Reading VA 336, size 4
+	Translate 336 , read
+phys addr = 1872
+	value read = 200832
+Reading VA 340, size 4
+	Translate 340 , read
+phys addr = 1876
+	value read = 667090960
+Reading VA 344, size 4
+	Translate 344 , read
+phys addr = 1880
+	value read = 6426657
+Reading VA 348, size 4
+	Translate 348 , read
+phys addr = 1884
+	value read = -1883045792
+Reading VA 1504, size 4
+	Translate 1504 , read
+phys addr = 3040
+	value read = 2
+Reading VA 352, size 4
+	Translate 352 , read
+phys addr = 1888
+	value read = 0
+Reading VA 356, size 4
+	Translate 356 , read
+phys addr = 1892
+	value read = 610533576
+Initializing address space: 12, 1536
+Initializing code segment.
+Code segment VA 0, Code Size 448
+Initializing stack pointer: 1520
+Reading VA 0, size 4
+	Translate 0 , read
+phys addr = 3072
+	value read = 201326660
+Reading VA 4, size 4
+	Translate 4 , read
+phys addr = 3076
+	value read = 0
+Reading VA 272, size 4
+	Translate 272 , read
+phys addr = 3344
+	value read = 666763152
+Reading VA 276, size 4
+	Translate 276 , read
+phys addr = 3348
+	value read = -1346437012
+Writing VA 1516, size 4, value 8
+	Translate 1516 , write
+Illegal pageframe 35
+Unexpected user mode exception: 4 -> bus error
+Assertion failed: line 111 file ../userprog/exception.cc

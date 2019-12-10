@@ -69,11 +69,15 @@ ExceptionHandler(ExceptionType which)
 			    break;
 			case SC_PrintInt:
 				val=kernel->machine->ReadRegister(4);
-				cout << "Print integer:" <<val << endl;
+				cout << "Print integer from process1 : " <<val << endl;
 				return;
 			case SC_PrintInt2:
 				val=kernel->machine->ReadRegister(4);
-				cout << "Print my testing integer:" << val << endl;
+				cout << "Print integer from process2 : " << val << endl;
+				return;
+			case SC_PrintInt3:
+				val=kernel->machine->ReadRegister(4);
+				cout << "Print integer from process3 : " << val << endl;
 				return;
 			case SC_Sleep:
 				val = kernel->machine->ReadRegister(4);

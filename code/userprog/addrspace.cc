@@ -127,7 +127,9 @@ AddrSpace::Load(char *fileName)
 
     // build our pageTable
     pageTable = new TranslationEntry[numPages];
-    for (unsigned int i = 0, j = 0; i < numPages; i++) {
+    
+    unsigned int i, j;
+    for (i = 0, j = 0; i < numPages; i++) {
         pageTable[i].virtualPage = i;   // for now, virt page # = phys page #, this wouldn't use probably
 
         while(AddrSpace::usedPhyPage[j++] == TRUE); // it the physical page has been used, iterative check the next one

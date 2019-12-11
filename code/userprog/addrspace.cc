@@ -132,20 +132,25 @@ AddrSpace::Load(char *fileName)
     for (i = 0, j = 0; i < numPages; i++) {
         pageTable[i].virtualPage = i;   // for now, virt page # = phys page #, this wouldn't use probably
 
-        while(AddrSpace::usedPhyPage[j++] == TRUE); // it the physical page has been used, iterative check the next one
-
-        AddrSpace::usedPhyPage[j-1] = TRUE;
-        pageTable[i].physicalPage = j-1;
-        pageTable[i].valid = TRUE;
-        pageTable[i].use = FALSE;
-        pageTable[i].dirty = FALSE;
-        pageTable[i].readOnly = FALSE;  
+        while (j < NumPhysPages && usedPhyPage[j]) ++j;  // it the physical page has been used, iterative check the next one
+        if (j == NumPhysPages) {  // Physical Memory has used up
+            pageTable[i].physicalPage = -1;
+            pageTable[i].valid = FALSE; // Mark this page as invaid
+            pageTable[i].use = FALSE;
+            pageTable[i].dirty = FALSE;
+            pageTable[i].readOnly = FALSE;
+        }
+        else {
+            AddrSpace::usedPhyPage[j] = TRUE;
+            pageTable[i].physicalPage = j;
+            pageTable[i].valid = TRUE;
+            pageTable[i].use = FALSE;
+            pageTable[i].dirty = FALSE;
+            pageTable[i].readOnly = FALSE;
+        }
     }
 
-    ASSERT(numPages <= NumPhysPages);		// check we're not trying
-						// to run anything too big --
-						// at least until we have
-						// virtual memory
+    ASSERT(numPages <= NumPhysPages + NumVirtPages);
 
     DEBUG(dbgAddr, "Initializing address space: " << numPages << ", " << size);
 
@@ -168,15 +173,26 @@ AddrSpace::Load(char *fileName)
         }        
 	
         unsigned int numPageToWrite = divRoundUp(seg->size, PageSize);
-        unsigned int indexFirstVirtualPage = seg->virtualAddr / PageSize;
-        unsigned int offsetFirstVirtualPage = seg->virtualAddr % PageSize;
+        unsigned int firstVirtualPage = seg->virtualAddr / PageSize;
+        unsigned int offsetVirtualPage = seg->virtualAddr % PageSize;
 
 	    for (i = 0; i < numPageToWrite; ++i) {
-            unsigned int addrPhysicalPage = pageTable[indexFirstVirtualPage + i].physicalPage * PageSize; // Calculate address of physical page (without offset)
+            unsigned int virtualPage = firstVirtualPage + i;
+            TranslationEntry *page = &pageTable[virtualPage];
+
             unsigned int addrInFile = seg->inFileAddr + i * PageSize; // Add offset to read from file
-	        executable->ReadAt(
-             &(kernel->machine->mainMemory[addrPhysicalPage + offsetFirstVirtualPage]), 
-              PageSize, addrInFile);
+
+            if (!page->valid) {
+                char *buffer = new char[PageSize]();
+                executable->ReadAt(buffer, PageSize, addrInFile);
+                kernel->machine->virtualMemoryManager->Put(virtualPage, buffer);
+                delete buffer;
+            } else {
+                unsigned int addrPhysicalPage = page->physicalPage * PageSize; // Calculate address of physical page (without offset)
+	            executable->ReadAt(
+                 &(kernel->machine->mainMemory[addrPhysicalPage + offsetVirtualPage]), 
+                  PageSize, addrInFile);
+            }
 	    }
     }
 

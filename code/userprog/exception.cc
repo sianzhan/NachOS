@@ -104,6 +104,10 @@ ExceptionHandler(ExceptionType which)
 	 		    break;
 		    }
 		    break;
+		case PageFaultException:
+            kernel->stats->numPageFaults++;
+		    kernel->machine->virtualMemoryManager->Fetch(kernel->machine->ReadRegister(BadVAddrReg) / PageSize);
+		    return;
 		default:
 		    cerr << "Unexpected user mode exception: " << which << " -> " <<  exceptionNames[which] << "\n";
 		    break;

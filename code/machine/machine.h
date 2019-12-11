@@ -21,18 +21,18 @@
 #ifndef MACHINE_H
 #define MACHINE_H
 
+const unsigned int PageSize = 128;
+const unsigned int NumPhysPages = 2;
+const unsigned int NumVirtPages = 1024;
+const int MemorySize = (NumPhysPages * PageSize);
+const int TLBSize = 4;			// if there is a TLB, make it small
+
 #include "copyright.h"
 #include "utility.h"
 #include "translate.h"
+#include "virtmem.h"
 
 // Definitions related to the size, and format of user memory
-
-const unsigned int PageSize = 128; 		// set the page size equal to
-					// the disk sector size, for simplicity
-
-const unsigned int NumPhysPages = 32;
-const int MemorySize = (NumPhysPages * PageSize);
-const int TLBSize = 4;			// if there is a TLB, make it small
 
 enum ExceptionType { 
 			NoException,           // Everything ok!
@@ -108,6 +108,8 @@ class Machine {
 
     char *mainMemory;		// physical memory to store user program,
 				// code and data, while executing
+
+    VirtualMemoryManager *virtualMemoryManager;
 
 // NOTE: the hardware translation of virtual addresses in the user program
 // to physical addresses (relative to the beginning of "mainMemory")

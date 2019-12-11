@@ -60,6 +60,7 @@ Machine::Machine(bool debug)
         registers[i] = 0;
 
     mainMemory = new char[MemorySize];
+    virtualMemoryManager = new VirtualMemoryManager(NumVirtPages);
 
     for (i = 0; i < MemorySize; i++)
       	mainMemory[i] = 0;

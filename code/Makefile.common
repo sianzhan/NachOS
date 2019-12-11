@@ -92,6 +92,7 @@ USERPROG_H = ../userprog/addrspace.h\
         ../filesys/filesys.h\
         ../filesys/openfile.h\
         ../machine/console.h\
+	../machine/virtmem.h\
         ../machine/machine.h\
         ../machine/mipssim.h\
         ../machine/translate.h\
@@ -103,13 +104,14 @@ USERPROG_C = ../userprog/addrspace.cc\
 	../userprog/synchconsole.cc\
 	../userprog/userkernel.cc\
         ../machine/console.cc\
+	../machine/virtmem.cc\
         ../machine/machine.cc\
         ../machine/mipssim.cc\
         ../machine/translate.cc\
 	../filesys/synchdisk.cc\
 	../machine/disk.cc
 
-USERPROG_O = addrspace.o exception.o synchconsole.o console.o machine.o \
+USERPROG_O = addrspace.o exception.o synchconsole.o console.o virtmem.o machine.o \
         mipssim.o translate.o userkernel.o synchdisk.o disk.o
 
 FILESYS_H = ../filesys/directory.h\

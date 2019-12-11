@@ -81,9 +81,11 @@ AddrSpace::AddrSpace()
 AddrSpace::~AddrSpace()
 {
     //free memory
-    for(int i =0; i< numPages; i++){
+    for(unsigned int i =0; i< numPages; i++){
         AddrSpace::usedPhyPage[pageTable[i].physicalPage] = FALSE;
     }
+
+    //#TODO Cleaning out spaces for pages on virtual memory
 
    delete pageTable;
 }
@@ -182,11 +184,15 @@ AddrSpace::Load(char *fileName)
 
             unsigned int addrInFile = seg->inFileAddr + i * PageSize; // Add offset to read from file
 
+            // If the page is not valid (mean the main memory has running out of free spaces)
+            // then load the pages into virtual memory
             if (!page->valid) {
                 char *buffer = new char[PageSize]();
                 executable->ReadAt(buffer, PageSize, addrInFile);
                 kernel->machine->virtualMemoryManager->Put(virtualPage, buffer);
                 delete buffer;
+
+            // else just load into main memory
             } else {
                 unsigned int addrPhysicalPage = page->physicalPage * PageSize; // Calculate address of physical page (without offset)
 	            executable->ReadAt(

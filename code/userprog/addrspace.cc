@@ -152,6 +152,7 @@ AddrSpace::Load(char *fileName)
             pageTable[i].dirty = FALSE;
             pageTable[i].readOnly = FALSE;
 
+            // Keep track on every frame with their respective virtual page
             FrameInfo &frameInfo = kernel->machine->virtualMemoryManager->frameInfos[j];
             frameInfo.pageTable = pageTable;
             frameInfo.virtualPage = i;
@@ -191,7 +192,7 @@ AddrSpace::Load(char *fileName)
             unsigned int addrInFile = seg->inFileAddr + i * PageSize; // Add offset to read from file
 
             // If the page is not valid (mean the main memory has running out of free spaces)
-            // then load the pages into virtual memory
+            // then load the data into swap space
             if (!page->valid) {
                 char *buffer = new char[PageSize]();
                 executable->ReadAt(buffer, PageSize, addrInFile);

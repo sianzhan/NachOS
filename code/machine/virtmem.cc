@@ -12,7 +12,7 @@
 
 VirtualMemoryManager::VirtualMemoryManager(unsigned int numPages) {
     this->numPages = numPages;
-    this->virtualMemory = new char[numPages * PageSize]();
+    this->swapSpace = new char[numPages * PageSize]();
     this->isPageUsed = new bool[numPages];
     this->frameInfos = new FrameInfo[NumPhysPages];
 }
@@ -32,90 +32,92 @@ VirtualMemoryManager::ChooseVictimPage() {
 
 
 //----------------------------------------------------------------------
-// VirtualMemoryManager::Fetch
-//      This function fetches virtual pages that are invalid, from 
-//      virtual memory onto main memory
+// VirtualMemoryManager::Swap
+//      This function swap one virtual page (in swap space) with physical page
 //
-//      virtualPage : virtualPage to be swapped onto main memory
-//      diskPage    : where the virtual page is currently located on virtual memory,
-//                    also where the original physical page will be swapped to
-//      physicalPage: where the virtualPage will be swapped on main memory, 
-//                    and the original page will be swapped into virtual memory
+//      virtualPage : no of virtualPage to be swapped
+//      physicalPage: no of physicalPage to be swapped
 //----------------------------------------------------------------------
 
 void
-VirtualMemoryManager::Swap(unsigned int virtualPage, unsigned int diskPage, unsigned int physicalPage) {
-    char *ptrDiskPage = this->virtualMemory + diskPage * PageSize;
+VirtualMemoryManager::Swap(unsigned int virtualPage, unsigned int physicalPage) {
+    std::map<PagingKey, unsigned int>::iterator itSwapPage = memoryTable.find(PagingKey(kernel->machine->pageTable, virtualPage));
+
+    char *ptrSwapPage = swapSpace + itSwapPage->second * PageSize;
     char *ptrPhysPage = kernel->machine->mainMemory + physicalPage * PageSize;
 
     char *buffer = new char[PageSize]();
 
-    std::memcpy(buffer, ptrDiskPage, PageSize);
-    std::memcpy(ptrDiskPage, ptrPhysPage, PageSize);
+    std::memcpy(buffer, ptrSwapPage, PageSize);
+    std::memcpy(ptrSwapPage, ptrPhysPage, PageSize);
     std::memcpy(ptrPhysPage, buffer, PageSize);
+
+
+    // First, take care of the physical page (which has been moved from main memory to space)
 
     // Get the frame info of this physical page
     FrameInfo &frameInfo = this->frameInfos[physicalPage];
 
-    // First set the table entry of this virtual page to invalid
+    // Set this physical page to `invalid` in page table
     frameInfo.pageTable[frameInfo.virtualPage].valid = FALSE;
-   
-    // And create record for this virtual page (which it has been moved to virtual memory)
-    this->memoryTable[EntryKey(frameInfo.pageTable, frameInfo.virtualPage)] = diskPage;
 
-    // Then set the table entry of the virtual page (which has been moved from virtual memory to main memory)
+    // Create record for this physical page, to indicate its new home in swap space
+    this->memoryTable[PagingKey(frameInfo.pageTable, frameInfo.virtualPage)] = itSwapPage->second;
+
+
+    // Second, take care of the virtual page (which has been moved from swap space to main memory)
+
+    // Set the frame info for this virtual page
+    frameInfo.pageTable = kernel->machine->pageTable;
+    frameInfo.virtualPage = virtualPage;
+
+    // Set this virtual page to `valid` in page table
     TranslationEntry &pageEntry = kernel->machine->pageTable[virtualPage];
 
-    pageEntry.physicalPage = physicalPage;
-    pageEntry.valid = TRUE;
+    pageEntry.physicalPage = physicalPage; 
+    pageEntry.valid = TRUE; // Set to valid
     pageEntry.use = FALSE;
     pageEntry.dirty = FALSE;
     pageEntry.readOnly = FALSE;
 
-    // And set the virtual page's info onto this frame's FrameInfo
-    frameInfo.pageTable = kernel->machine->pageTable;
-    frameInfo.virtualPage = virtualPage;
-
-    // Remove the record (of virtmem) of the virtual page (which has been moved from virtual memory to main memory)
-    std::map<EntryKey, unsigned int>::iterator it = memoryTable.find(EntryKey(kernel->machine->pageTable, virtualPage));
-    this->memoryTable.erase(it);
+    // Delete the record of this virtual page (because it no longer stay in the land of swap space)
+    this->memoryTable.erase(itSwapPage);
 
 }
 
 
 //----------------------------------------------------------------------
 // VirtualMemoryManager::Fetch
-//      Function to fetch virtual page from virtual memory(disk) into main 
-//      memory, make sure the virtual page doesn't exist in main memory 
+//      Function to fetch a virtual page from space space and put it into main 
+//      memory, make sure the virtual page doesn't exist in main memory
 //      before using this function (on PageFaultException), or data loss
 //      will occur. (Foolproof check not yet implemented)
 //----------------------------------------------------------------------
 
 void
 VirtualMemoryManager::Fetch(unsigned int virtualPage) {
-    // First get the page in virtual memory for the virtual page
-    EntryKey key = EntryKey(kernel->machine->pageTable, virtualPage);
-    std::map<EntryKey, unsigned int>::iterator it = memoryTable.find(key);
+    // First try to seek the virtual page from swap space
+    PagingKey key = PagingKey(kernel->machine->pageTable, virtualPage);
+    std::map<PagingKey, unsigned int>::iterator it = memoryTable.find(key);
 
-    // If the virtualPage address doesn't exist in virtualMemory nor mainMemory
-    // This would be a Write instruction
-    // Thus allocate new page for it and then swap a frame out for the instruction
+    // If the virtual page doesn't exist in swap space nor main memory
+    // This would be a write instruction
+    // Thus allocate new page for it and then swap a frame out with it, for the instruction
     if (it == memoryTable.end()) {
         this->Put(kernel->machine->pageTable, virtualPage, new char[PageSize]);
     }
 
-    // Swap a frame out into virtual memory and have the main memory available for this virtual address
-    unsigned int diskPage = memoryTable.find(key)->second;
+    // Swap a physical page into swap space and have the main memory available for this virtual page
     unsigned int physicalPage = this->ChooseVictimPage();
 
-    this->Swap(virtualPage, diskPage, physicalPage);
+    this->Swap(virtualPage, physicalPage);
 }
 
 
 //----------------------------------------------------------------------
 // VirtualMemoryManager::Put
-//      Function which find unused page on virtual memory
-//      then allocate it to virtual page
+//      Function to find unused swap page
+//      then assign it to virtual page
 //----------------------------------------------------------------------
 
 void 
@@ -123,27 +125,27 @@ VirtualMemoryManager::Put(TranslationEntry *pageTable, unsigned int virtualPage,
     unsigned int i = 0;
     while (i < numPages && isPageUsed[i]) ++i;
     if (i == numPages) {
-        cerr<<"All Virtual memory space used"<<endl;
+        cerr<<"All swap pages are used"<<endl;
         return;
     }
 
     isPageUsed[i] = TRUE;
-    EntryKey key = EntryKey(pageTable, virtualPage);
+    PagingKey key = PagingKey(pageTable, virtualPage);
     memoryTable[key] = i;
-    // Copy the data of size `PageSize` from `data` into virtual memory.
-    std::memcpy(this->virtualMemory + i * PageSize, data, PageSize);
+    // Copy the data of size `PageSize` from `data` into swap space.
+    std::memcpy(this->swapSpace + i * PageSize, data, PageSize);
     
 }
 
 
 //----------------------------------------------------------------------
 // VirtualMemoryManager::opertor<
-//      Comparator function for EntryKey
+//      Comparator function for PagingKey
 //      Necessary for map to be functional
 //----------------------------------------------------------------------
 
 bool
-VirtualMemoryManager::EntryKey::operator< (const VirtualMemoryManager::EntryKey& rhs) const
+VirtualMemoryManager::PagingKey::operator< (const VirtualMemoryManager::PagingKey& rhs) const
 { 
    return  ((pageTable < rhs.pageTable) || (pageTable == rhs.pageTable && virtualPage < rhs.virtualPage));
 }

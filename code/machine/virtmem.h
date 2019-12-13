@@ -4,44 +4,46 @@
 #include <vector>
 #include <map>
 
-// Used to store the informations of frame on main memory
+// Used to store the informations of frames of main memory
 struct FrameInfo{
 	TranslationEntry *pageTable;
 	unsigned int virtualPage; // Represent the virtual page this frame is mapped from
 };
 
 class VirtualMemoryManager {
-	struct EntryKey {
+
+	// Key used to map virtual page (per process) to their location on swap space
+	struct PagingKey {
 		TranslationEntry *pageTable;
 		unsigned int virtualPage; // Represent the virtual page of pageTable
 
 		// Constructor
-		EntryKey(TranslationEntry *_pageTable, unsigned int _virtualPage) : pageTable(_pageTable), virtualPage(_virtualPage) {}
-   		bool operator< (const EntryKey& rhs) const;
+		PagingKey(TranslationEntry *_pageTable, unsigned int _virtualPage) : pageTable(_pageTable), virtualPage(_virtualPage) {}
+   		bool operator< (const PagingKey& rhs) const;
 	};
 
 	private:		
-		unsigned int numPages; // The number of page this virtual memory has
-		char *virtualMemory; // The Virtual Memory
-		bool *isPageUsed; // Keep track whether the pages of virtual memory have been used.
+		unsigned int numPages; // The number of page this swap space can hold
+		char *swapSpace; // Swap Space
+		bool *isPageUsed; // Keep track whether the swap pages have been used.
 
-		std::map<EntryKey, unsigned int> memoryTable; // Map of virtual page to page of virtual memory
+		std::map<PagingKey, unsigned int> memoryTable; // Map from virtual page to swap page
 
-        // Swap memory from virtual memory to physical memory, both forth and back
-	    void Swap(unsigned int virtualPage, unsigned int diskPage, unsigned int physicalPage); 
+        // This function swap one virtual page (in swap space) with physical page
+	    void Swap(unsigned int virtualPage, unsigned int physicalPage); 
 
 	public:
-		FrameInfo* frameInfos; // Keep the FrameInfo for every frame on main memory
+		FrameInfo* frameInfos; // Keep the informations for every frame of main memory
 
 	    VirtualMemoryManager(unsigned int numPages);
 
-        // Choose victim page from physical memory
-        // Which will be then be used to swap with virtual page
+        // Choose victim frame from main memory
+        // Which will be then be swapped into swap space, freeing the frame for virtual page
         unsigned int ChooseVictimPage();
 
 		void Fetch(unsigned int virtualPage);
 
-		// Insert a page into virtual memory
+		// Insert a page into swap space
 		void Put(TranslationEntry *pageTable, unsigned int virtualPage, char *data);
 };
 

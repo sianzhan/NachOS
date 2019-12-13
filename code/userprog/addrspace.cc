@@ -20,6 +20,7 @@
 #include "addrspace.h"
 #include "machine.h"
 #include "noff.h"
+#include "virtmem.h"
 
 // init usedPhyPage[]
 bool AddrSpace::usedPhyPage[NumPhysPages] = {0};
@@ -144,11 +145,16 @@ AddrSpace::Load(char *fileName)
         }
         else {
             AddrSpace::usedPhyPage[j] = TRUE;
+
             pageTable[i].physicalPage = j;
             pageTable[i].valid = TRUE;
             pageTable[i].use = FALSE;
             pageTable[i].dirty = FALSE;
             pageTable[i].readOnly = FALSE;
+
+            FrameInfo &frameInfo = kernel->machine->virtualMemoryManager->frameInfos[j];
+            frameInfo.pageTable = pageTable;
+            frameInfo.virtualPage = i;
         }
     }
 
@@ -189,7 +195,7 @@ AddrSpace::Load(char *fileName)
             if (!page->valid) {
                 char *buffer = new char[PageSize]();
                 executable->ReadAt(buffer, PageSize, addrInFile);
-                kernel->machine->virtualMemoryManager->Put(virtualPage, buffer);
+                kernel->machine->virtualMemoryManager->Put(pageTable, virtualPage, buffer);
                 delete buffer;
 
             // else just load into main memory

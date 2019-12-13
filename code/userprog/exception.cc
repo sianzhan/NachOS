@@ -107,6 +107,7 @@ ExceptionHandler(ExceptionType which)
 		case PageFaultException:
             kernel->stats->numPageFaults++;
 		    kernel->machine->virtualMemoryManager->Fetch(kernel->machine->ReadRegister(BadVAddrReg) / PageSize);
+            // cout << "Page fault handled, proceeding to instruction at PC: " << kernel->machine->ReadRegister(PCReg) << endl;
 		    return;
 		default:
 		    cerr << "Unexpected user mode exception: " << which << " -> " <<  exceptionNames[which] << "\n";

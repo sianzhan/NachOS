@@ -14,6 +14,7 @@ VirtualMemoryManager::VirtualMemoryManager(unsigned int numPages) {
     this->numPages = numPages;
     this->virtualMemory = new char[numPages * PageSize]();
     this->isPageUsed = new bool[numPages];
+    this->frameInfos = new FrameInfo[NumPhysPages];
 }
 
 
@@ -53,26 +54,16 @@ VirtualMemoryManager::Swap(unsigned int virtualPage, unsigned int diskPage, unsi
     std::memcpy(ptrDiskPage, ptrPhysPage, PageSize);
     std::memcpy(ptrPhysPage, buffer, PageSize);
 
-    // First set the table entry of the original page to INVALID
-    unsigned int i;
-    for (i = 0; i < kernel->machine->pageTableSize; ++i) {
-        if (kernel->machine->pageTable[i].physicalPage == physicalPage) {
-            kernel->machine->pageTable[i].physicalPage = -1;
-            kernel->machine->pageTable[i].valid = FALSE; // Mark this page as invaid
-            kernel->machine->pageTable[i].use = FALSE;
-            kernel->machine->pageTable[i].dirty = FALSE;
-            kernel->machine->pageTable[i].readOnly = FALSE;
-            break;
-        }
-    }
-    if (i == kernel->machine->pageTableSize) {
-        cout<<"BOOOOOOOOOOOOOOO"<<endl;
-        // Exception
-    } else {
-        this->memoryTable[EntryKey(kernel->currentThread, i)] = diskPage;
-    }
+    // Get the frame info of this physical page
+    FrameInfo &frameInfo = this->frameInfos[physicalPage];
 
-    // Then set the table entry of new virtual page
+    // First set the table entry of this virtual page to invalid
+    frameInfo.pageTable[frameInfo.virtualPage].valid = FALSE;
+   
+    // And create record for this virtual page (which it has been moved to virtual memory)
+    this->memoryTable[EntryKey(frameInfo.pageTable, frameInfo.virtualPage)] = diskPage;
+
+    // Then set the table entry of the virtual page (which has been moved from virtual memory to main memory)
     TranslationEntry &pageEntry = kernel->machine->pageTable[virtualPage];
 
     pageEntry.physicalPage = physicalPage;
@@ -81,8 +72,12 @@ VirtualMemoryManager::Swap(unsigned int virtualPage, unsigned int diskPage, unsi
     pageEntry.dirty = FALSE;
     pageEntry.readOnly = FALSE;
 
-    // Remove the virtual memory record of the page swappped into main memory
-    std::map<EntryKey, unsigned int>::iterator it = memoryTable.find(EntryKey(kernel->currentThread, virtualPage));
+    // And set the virtual page's info onto this frame's FrameInfo
+    frameInfo.pageTable = kernel->machine->pageTable;
+    frameInfo.virtualPage = virtualPage;
+
+    // Remove the record (of virtmem) of the virtual page (which has been moved from virtual memory to main memory)
+    std::map<EntryKey, unsigned int>::iterator it = memoryTable.find(EntryKey(kernel->machine->pageTable, virtualPage));
     this->memoryTable.erase(it);
 
 }
@@ -99,14 +94,14 @@ VirtualMemoryManager::Swap(unsigned int virtualPage, unsigned int diskPage, unsi
 void
 VirtualMemoryManager::Fetch(unsigned int virtualPage) {
     // First get the page in virtual memory for the virtual page
-    EntryKey key = EntryKey(kernel->currentThread, virtualPage);
+    EntryKey key = EntryKey(kernel->machine->pageTable, virtualPage);
     std::map<EntryKey, unsigned int>::iterator it = memoryTable.find(key);
 
     // If the virtualPage address doesn't exist in virtualMemory nor mainMemory
     // This would be a Write instruction
     // Thus allocate new page for it and then swap a frame out for the instruction
     if (it == memoryTable.end()) {
-        this->Put(virtualPage, new char[PageSize]);
+        this->Put(kernel->machine->pageTable, virtualPage, new char[PageSize]);
     }
 
     // Swap a frame out into virtual memory and have the main memory available for this virtual address
@@ -124,7 +119,7 @@ VirtualMemoryManager::Fetch(unsigned int virtualPage) {
 //----------------------------------------------------------------------
 
 void 
-VirtualMemoryManager::Put(unsigned int virtualPage, char *data) {
+VirtualMemoryManager::Put(TranslationEntry *pageTable, unsigned int virtualPage, char *data) {
     unsigned int i = 0;
     while (i < numPages && isPageUsed[i]) ++i;
     if (i == numPages) {
@@ -133,7 +128,7 @@ VirtualMemoryManager::Put(unsigned int virtualPage, char *data) {
     }
 
     isPageUsed[i] = TRUE;
-    EntryKey key = EntryKey(kernel->currentThread, virtualPage);
+    EntryKey key = EntryKey(pageTable, virtualPage);
     memoryTable[key] = i;
     // Copy the data of size `PageSize` from `data` into virtual memory.
     std::memcpy(this->virtualMemory + i * PageSize, data, PageSize);
@@ -150,6 +145,6 @@ VirtualMemoryManager::Put(unsigned int virtualPage, char *data) {
 bool
 VirtualMemoryManager::EntryKey::operator< (const VirtualMemoryManager::EntryKey& rhs) const
 { 
-   return  ((pid < rhs.pid) || (pid == rhs.pid && virtualPage < rhs.virtualPage));
+   return  ((pageTable < rhs.pageTable) || (pageTable == rhs.pageTable && virtualPage < rhs.virtualPage));
 }
 

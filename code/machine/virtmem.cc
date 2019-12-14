@@ -4,6 +4,7 @@
 #include "virtmem.h"
 #include <cstring>
 #include <stdlib.h>
+#include <unistd.h>
 
 //----------------------------------------------------------------------
 // VirtualMemoryManager::VirtualMemoryManager
@@ -15,6 +16,8 @@ VirtualMemoryManager::VirtualMemoryManager(unsigned int numPages) {
     this->swapSpace = new char[numPages * PageSize]();
     this->isPageUsed = new bool[numPages];
     this->frameInfos = new FrameInfo[NumPhysPages];
+
+    this->replacementAlgo = FIFO;
 }
 
 
@@ -27,7 +30,14 @@ VirtualMemoryManager::VirtualMemoryManager(unsigned int numPages) {
 
 unsigned int 
 VirtualMemoryManager::ChooseVictimPage() {
-    return rand() % NumPhysPages; // Select randomly currently.
+    unsigned int victim;
+    if (this->replacementAlgo == FIFO) {
+        victim = this->replacementInfos.top().physicalPage;
+        this->replacementInfos.pop();
+    }
+    else victim = rand() % NumPhysPages; // Select randomly currently.
+
+    return victim;
 }
 
 
@@ -67,18 +77,8 @@ VirtualMemoryManager::Swap(unsigned int virtualPage, unsigned int physicalPage) 
 
     // Second, take care of the virtual page (which has been moved from swap space to main memory)
 
-    // Set the frame info for this virtual page
-    frameInfo.pageTable = kernel->machine->pageTable;
-    frameInfo.virtualPage = virtualPage;
-
-    // Set this virtual page to `valid` in page table
-    TranslationEntry &pageEntry = kernel->machine->pageTable[virtualPage];
-
-    pageEntry.physicalPage = physicalPage; 
-    pageEntry.valid = TRUE; // Set to valid
-    pageEntry.use = FALSE;
-    pageEntry.dirty = FALSE;
-    pageEntry.readOnly = FALSE;
+    // Map this virtual page to its new home in main memory
+    kernel->machine->virtualMemoryManager->Map(kernel->machine->pageTable, virtualPage, physicalPage);
 
     // Delete the record of this virtual page (because it no longer stay in the land of swap space)
     this->memoryTable.erase(itSwapPage);
@@ -137,6 +137,27 @@ VirtualMemoryManager::Put(TranslationEntry *pageTable, unsigned int virtualPage,
     
 }
 
+//----------------------------------------------------------------------
+// VirtualMemoryManager::Map
+//      Function to map virtual page to phsiycal page
+//      It updated the relative info for page replacement
+//----------------------------------------------------------------------
+void VirtualMemoryManager::Map(TranslationEntry *pageTable, unsigned int virtualPage, unsigned int physicalPage) {
+    pageTable[virtualPage].physicalPage = physicalPage;
+    pageTable[virtualPage].valid = TRUE;
+    pageTable[virtualPage].use = FALSE;
+    pageTable[virtualPage].dirty = FALSE;
+    pageTable[virtualPage].readOnly = FALSE;
+
+    // Keep track on every frame with their respective virtual page
+    FrameInfo &frameInfo = this->frameInfos[physicalPage];
+    frameInfo.pageTable = pageTable;
+    frameInfo.virtualPage = virtualPage;
+
+    frameInfo.seq = replacementCounter;
+    this->replacementCounter++;
+    this->replacementInfos.push(physicalPage);
+}
 
 //----------------------------------------------------------------------
 // VirtualMemoryManager::opertor<
@@ -148,5 +169,11 @@ bool
 VirtualMemoryManager::PagingKey::operator< (const VirtualMemoryManager::PagingKey& rhs) const
 { 
    return  ((pageTable < rhs.pageTable) || (pageTable == rhs.pageTable && virtualPage < rhs.virtualPage));
+}
+
+bool
+VirtualMemoryManager::ReplacementInfo::operator< (const VirtualMemoryManager::ReplacementInfo& rhs) const
+{ 
+   return 0;//(kernel->machine->virtualMemoryManager->frameInfos[physicalPage].seq < kernel->machine->virtualMemoryManager->frameInfos[rhs.physicalPage].seq);
 }
 

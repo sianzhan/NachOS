@@ -137,25 +137,12 @@ AddrSpace::Load(char *fileName)
 
         while (j < NumPhysPages && usedPhyPage[j]) ++j;  // it the physical page has been used, iterative check the next one
         if (j == NumPhysPages) {  // Physical Memory has used up
-            pageTable[i].physicalPage = -1;
             pageTable[i].valid = FALSE; // Mark this page as invaid
-            pageTable[i].use = FALSE;
-            pageTable[i].dirty = FALSE;
-            pageTable[i].readOnly = FALSE;
         }
         else {
             AddrSpace::usedPhyPage[j] = TRUE;
-
-            pageTable[i].physicalPage = j;
-            pageTable[i].valid = TRUE;
-            pageTable[i].use = FALSE;
-            pageTable[i].dirty = FALSE;
-            pageTable[i].readOnly = FALSE;
-
-            // Keep track on every frame with their respective virtual page
-            FrameInfo &frameInfo = kernel->machine->virtualMemoryManager->frameInfos[j];
-            frameInfo.pageTable = pageTable;
-            frameInfo.virtualPage = i;
+            
+            kernel->machine->virtualMemoryManager->Map(pageTable, i, j);
         }
     }
 
